@@ -9,7 +9,8 @@
     "docs:dev": "npm run index && vitepress dev docs",
     "docs:build": "npm run index && vitepress build docs && node scripts/strip-font-preload.mjs",
     "docs:preview": "npm run index && vitepress preview docs",
-    "pdf:shrink": "node scripts/shrink-pdf.mjs"
+    "pdf:shrink": "node scripts/shrink-pdf.mjs",
+    "pdf:split": "node scripts/split-pdf.mjs"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.9",

@@ -22,12 +22,18 @@
 
 ## 资料文件
 
-共 1 个文件。
+共 3 个文件。
 
 | 文件 | 类型 | 大小 |
 | --- | --- | --- |
-| [ode笔记.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0.pdf) | PDF | 2.00 MB |
+| [ode笔记-P01-15.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P01-15.pdf) | PDF | 6.44 MB |
+| [ode笔记-P16-37.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P16-37.pdf) | PDF | 10.11 MB |
+| [ode笔记-P38-52.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P38-52.pdf) | PDF | 5.40 MB |
 
-<PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0.pdf" title="ode笔记.pdf" />
+<PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P01-15.pdf" title="ode笔记-P01-15.pdf" />
+
+<PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P16-37.pdf" title="ode笔记-P16-37.pdf" />
+
+<PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0-P38-52.pdf" title="ode笔记-P38-52.pdf" />
 
 <!-- 资料列表：结束 -->
