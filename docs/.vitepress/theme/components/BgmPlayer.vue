@@ -15,7 +15,7 @@ import { ref } from 'vue'
  *        填一首就单曲循环；填多首就按顺序自动切换。
  */
 const tracks = [
-  // '/music/bgm.mp3',
+  '/music/bgm.mp3',
 ]
 
 let audio = null

@@ -1,4 +1,4 @@
-# 统一换行符：仓库内存 LF，Windows 检出时自动转 CRLF
+﻿# 统一换行符：仓库内存 LF，Windows 检出时自动转 CRLF
 # 避免本地是 Windows、构建机是 Linux 时出现整文件 diff
 * text=auto
 
@@ -23,3 +23,10 @@
 *.docx binary
 *.pptx binary
 *.xlsx binary
+
+# 音频：必须声明为二进制，否则 git 的换行符转换会损坏文件
+*.mp3  binary
+*.m4a  binary
+*.wav  binary
+*.ogg  binary
+*.flac binary
