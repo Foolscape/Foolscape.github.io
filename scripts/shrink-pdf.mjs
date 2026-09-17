@@ -27,13 +27,14 @@ import { PDFDocument } from 'pdf-lib'
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 // ---------- 参数解析 ----------
-const opts = { dpi: 150, quality: 70, gray: false, pages: null, jpg: null }
+const opts = { dpi: 150, quality: 70, gray: false, pages: null, jpg: null, format: 'jpeg' }
 const positional = []
 
 for (const arg of process.argv.slice(2)) {
   if (arg.startsWith('--dpi=')) opts.dpi = Number(arg.slice(6))
   else if (arg.startsWith('--quality=')) opts.quality = Number(arg.slice(10))
   else if (arg === '--gray') opts.gray = true
+  else if (arg.startsWith('--format=')) opts.format = arg.slice(9)
   else if (arg.startsWith('--pages=')) {
     const [a, b] = arg.slice(8).split('-')
     opts.pages = [Number(a), Number(b ?? a)]
@@ -77,6 +78,12 @@ async function renderPage(page, scale) {
   return { canvas, w, h, ptW: viewport.width / scale, ptH: viewport.height / scale }
 }
 
+// ⚠️ 注意：@napi-rs/canvas 的 toBuffer('image/jpeg', q) 里 q 是 **0-100**，
+// 不是浏览器 Canvas 那种 0-1。传 0-1 会被钳到最低画质（而且不报错！）。
+// --format=png 是无损的，没有 JPEG 块状噪点，但体积大不少。
+const encode = (canvas) =>
+  opts.format === 'png' ? canvas.toBuffer('image/png') : canvas.toBuffer('image/jpeg', opts.quality)
+
 // ---------- 主流程 ----------
 const data = new Uint8Array(fs.readFileSync(input))
 const doc = await getDocument({ data, useSystemFonts: true, isEvalSupported: false }).promise
@@ -90,7 +97,7 @@ const scale = opts.dpi / 72
 if (opts.jpg) {
   const page = await doc.getPage(opts.jpg.page)
   const { canvas } = await renderPage(page, scale)
-  fs.writeFileSync(opts.jpg.file, canvas.toBuffer('image/jpeg', opts.quality / 100))
+  fs.writeFileSync(opts.jpg.file, jpeg(canvas))
   console.log(`已导出第 ${opts.jpg.page} 页 -> ${opts.jpg.file}`)
   process.exit(0)
 }
@@ -104,10 +111,10 @@ const t0 = Date.now()
 for (let n = from; n <= to; n++) {
   const page = await doc.getPage(n)
   const { canvas, ptW, ptH } = await renderPage(page, scale)
-  const jpg = canvas.toBuffer('image/jpeg', opts.quality / 100)
+  const jpg = encode(canvas)
   totalJpg += jpg.length
 
-  const embedded = await outDoc.embedJpg(jpg)
+  const embedded = opts.format === 'png' ? await outDoc.embedPng(jpg) : await outDoc.embedJpg(jpg)
   const outPage = outDoc.addPage([ptW, ptH])
   outPage.drawImage(embedded, { x: 0, y: 0, width: ptW, height: ptH })
 
