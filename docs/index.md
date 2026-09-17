@@ -4,7 +4,7 @@ layout: home
 hero:
   name: 峻熹的学习笔记
   text: 浙江大学 · 大二在读
-  tagline: 按专业课归档的 Markdown 笔记与 PDF 资料 —— 学到哪，记到哪。
+  tagline: 按学期与专业课归档的 Markdown 笔记与 PDF 资料 —— 学到哪，记到哪。
   actions:
     - theme: brand
       text: 开始阅读
@@ -17,8 +17,8 @@ hero:
       link: https://github.com/Foolscape
 
 features:
-  - title: 按专业课分类
-    details: 一门课一个文件夹。笔记写 Markdown，扫描件、课件放 PDF，自动归到对应课程下。
+  - title: 按学期与课程归档
+    details: 一个学期一个分组，一门课一个文件夹。笔记写 Markdown，扫描件、课件放 PDF，自动归位。
   - title: 目录自动生成
     details: 新增笔记或资料不用改任何配置，侧边栏、资料下载表会在构建时自动长出来。
   - title: 全文搜索
@@ -35,6 +35,6 @@ features:
 
 ## 怎么找内容
 
-- **[专业课](/专业课/)** —— 按课程分类的笔记与资料
+- **[专业课](/专业课/)** —— 按学期与课程分类的笔记与资料
 - **[学习日志](/学习日志/)** —— 按时间记录的学习过程与复盘
 - **[关于我](/关于我)** —— 联系方式与这个站的来由

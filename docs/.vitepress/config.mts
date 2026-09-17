@@ -57,18 +57,42 @@ function mdFiles(dir) {
     })
 }
 
-/** 全部课程 → 一个可折叠分组 */
+/** 学期排序：大二秋冬 → 大二春夏 → 大三秋冬 …… 认不出的名字排最后 */
+const GRADE = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5 }
+function semesterKey(name) {
+  const grade = name.match(/大([一二三四五])/)?.[1]
+  if (!grade) return `9${name}`
+  const term = name.includes('秋冬') ? 1 : name.includes('春夏') ? 2 : 3
+  return `${GRADE[grade]}${term}`
+}
+
+function sortSemesters(list) {
+  return list.sort(
+    (a, b) => semesterKey(a).localeCompare(semesterKey(b)) || a.localeCompare(b, 'zh-CN')
+  )
+}
+
+function sortCourses(list) {
+  return list.sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
+}
+
+/** 学期 → 课程 → 章节，两层可折叠分组 */
 function courseSidebar() {
-  return listDirs(COURSE_DIR)
-    .sort((a, b) => a.localeCompare(b, 'zh-CN'))
-    .map((course) => ({
+  return sortSemesters(listDirs(COURSE_DIR)).map((semester) => ({
+    text: semester,
+    collapsed: false,
+    items: sortCourses(listDirs(path.join(COURSE_DIR, semester))).map((course) => ({
       text: course,
+      link: `/专业课/${semester}/${course}/`,
       collapsed: true,
-      items: mdFiles(path.join(COURSE_DIR, course)).map((f) => ({
-        text: readTitle(path.join(COURSE_DIR, course, f)),
-        link: f === 'index.md' ? `/专业课/${course}/` : `/专业课/${course}/${f.replace(/\.md$/, '')}`
-      }))
+      items: mdFiles(path.join(COURSE_DIR, semester, course))
+        .filter((f) => f !== 'index.md')
+        .map((f) => ({
+          text: readTitle(path.join(COURSE_DIR, semester, course, f)),
+          link: `/专业课/${semester}/${course}/${f.replace(/\.md$/, '')}`
+        }))
     }))
+  }))
 }
 
 /** 学习日志：按文件名倒序（文件名以日期开头，所以就是最新在前） */
@@ -90,7 +114,7 @@ function logSidebar() {
   ]
 }
 
-const courses = listDirs(COURSE_DIR).sort((a, b) => a.localeCompare(b, 'zh-CN'))
+const semesters = sortSemesters(listDirs(COURSE_DIR))
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -115,7 +139,13 @@ export default defineConfig({
         text: '专业课',
         items: [
           { text: '全部课程', link: '/专业课/' },
-          ...courses.map((c) => ({ text: c, link: `/专业课/${c}/` }))
+          ...semesters.map((s) => ({
+            text: s,
+            items: sortCourses(listDirs(path.join(COURSE_DIR, s))).map((c) => ({
+              text: c,
+              link: `/专业课/${s}/${c}/`
+            }))
+          }))
         ]
       },
       { text: '学习日志', link: '/学习日志/' },
