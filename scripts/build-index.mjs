@@ -85,9 +85,15 @@ function ensureCourse(semester, course) {
 const MARK_START = '<!-- 资料列表：开始（自动生成，勿手改这一段） -->'
 const MARK_END = '<!-- 资料列表：结束 -->'
 
-/** 渲染资料列表区块 */
+/** 转义 HTML 属性值里的特殊字符 */
+function escAttr(s) {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+}
+
+/** 渲染资料列表区块：概览表格 + 每个 PDF 一个内嵌预览 */
 function renderAssetBlock(semester, course, files) {
   const assetDir = path.join(ASSET_ROOT, semester, course)
+
   const rows = files
     .map((rel) => {
       const size = fs.statSync(path.join(assetDir, rel)).size
@@ -97,7 +103,16 @@ function renderAssetBlock(semester, course, files) {
     })
     .join('\n')
 
-  return [
+  // 每个 PDF 生成一个可折叠的内嵌阅读器（组件在 theme/components/PdfViewer.vue）
+  const viewers = files
+    .filter((rel) => rel.toLowerCase().endsWith('.pdf'))
+    .map((rel) => {
+      const url = encodeURI(`/资料/${semester}/${course}/${rel}`)
+      return `<PdfViewer src="${url}" title="${escAttr(rel.split('/').pop() || rel)}" />`
+    })
+    .join('\n\n')
+
+  const block = [
     MARK_START,
     '',
     '## 资料文件',
@@ -106,10 +121,11 @@ function renderAssetBlock(semester, course, files) {
     '',
     '| 文件 | 类型 | 大小 |',
     '| --- | --- | --- |',
-    rows,
-    '',
-    MARK_END
-  ].join('\n')
+    rows
+  ]
+  if (viewers) block.push('', viewers)
+  block.push('', MARK_END)
+  return block.join('\n')
 }
 
 /**
