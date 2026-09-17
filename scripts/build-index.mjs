@@ -81,13 +81,26 @@ function ensureCourse(semester, course) {
   }
 }
 
-/** 生成某门课的「资料下载.md」 */
+/**
+ * 生成某门课的「资料下载.md」
+ *
+ * 只在**真的有文件**时才生成 —— 否则每门课都挂一个「还没有资料文件」的空页面，
+ * 侧边栏会非常臃肿。文件被删光时，把之前生成的页面一并清理掉。
+ */
 function writeAssetPage(semester, course) {
   const assetDir = path.join(ASSET_ROOT, semester, course)
   fs.mkdirSync(assetDir, { recursive: true })
 
   const files = listFiles(assetDir).sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
   const target = path.join(COURSE_ROOT, semester, course, '资料下载.md')
+
+  if (files.length === 0) {
+    if (fs.existsSync(target)) {
+      fs.rmSync(target)
+      console.log(`  - 无资料，移除空页面：docs/专业课/${semester}/${course}/资料下载.md`)
+    }
+    return
+  }
 
   const rows = files
     .map((rel) => {
@@ -98,17 +111,34 @@ function writeAssetPage(semester, course) {
     })
     .join('\n')
 
-  const body = files.length
-    ? `| 文件 | 类型 | 大小 |\n| --- | --- | --- |\n${rows}\n`
-    : `_这门课还没有资料文件。_\n\n把 PDF、课件、扫描件拖进这个文件夹即可（文件名随意，中文也行）：\n\n\`\`\`\ndocs/public/资料/${semester}/${course}/\n\`\`\`\n\n然后重新运行 \`npm run docs:dev\`（或直接推送到 GitHub），本页表格会自动填好。\n`
-
   fs.writeFileSync(
     target,
     `---\ntitle: 资料下载\n---\n\n<!-- ${GENERATED_BY} -->\n\n` +
-      `# ${course} · 资料下载\n\n共 ${files.length} 个文件。\n\n${body}`,
+      `# ${course} · 资料下载\n\n共 ${files.length} 个文件。\n\n` +
+      `| 文件 | 类型 | 大小 |\n| --- | --- | --- |\n${rows}\n`,
     'utf-8'
   )
   console.log(`  ✓ 资料索引：docs/专业课/${semester}/${course}/资料下载.md（${files.length} 个文件）`)
+}
+
+/**
+ * 安全网：课程页里写了 [资料下载](./资料下载) 但这门课没有文件时，
+ * 目标页面不存在，构建会因为死链直接失败。这里提前给出明确警告。
+ */
+function checkAssetLinks(semester, course) {
+  const dir = path.join(COURSE_ROOT, semester, course)
+  const pageExists = fs.existsSync(path.join(dir, '资料下载.md'))
+  if (pageExists) return
+  for (const f of listMd(dir)) {
+    if (f === '资料下载.md') continue
+    const raw = fs.readFileSync(path.join(dir, f), 'utf-8')
+    if (/\]\(\.\/资料下载\)/.test(raw)) {
+      console.warn(
+        `[build-index] ⚠ ${semester}/${course}/${f} 里链接了「资料下载」，但这门课还没有资料文件，页面不存在。` +
+          `\n             构建会因为死链失败 —— 请删掉该链接，或往 docs/public/资料/${semester}/${course}/ 放文件。`
+      )
+    }
+  }
 }
 
 /** 生成学期总览页 */
@@ -161,6 +191,7 @@ function main() {
     for (const course of courses) {
       ensureCourse(semester, course)
       writeAssetPage(semester, course)
+      checkAssetLinks(semester, course)
     }
   }
   console.log('[build-index] 完成。')

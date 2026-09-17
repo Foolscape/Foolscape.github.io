@@ -81,17 +81,18 @@ function courseSidebar() {
   return sortSemesters(listDirs(COURSE_DIR)).map((semester) => ({
     text: semester,
     collapsed: false,
-    items: sortCourses(listDirs(path.join(COURSE_DIR, semester))).map((course) => ({
-      text: course,
-      link: `/专业课/${semester}/${course}/`,
-      collapsed: true,
-      items: mdFiles(path.join(COURSE_DIR, semester, course))
+    items: sortCourses(listDirs(path.join(COURSE_DIR, semester))).map((course) => {
+      const children = mdFiles(path.join(COURSE_DIR, semester, course))
         .filter((f) => f !== 'index.md')
         .map((f) => ({
           text: readTitle(path.join(COURSE_DIR, semester, course, f)),
           link: `/专业课/${semester}/${course}/${f.replace(/\.md$/, '')}`
         }))
-    }))
+      // 没有子页面的课程直接当链接，不给折叠箭头 —— 避免侧边栏出现空分组
+      return children.length
+        ? { text: course, link: `/专业课/${semester}/${course}/`, collapsed: true, items: children }
+        : { text: course, link: `/专业课/${semester}/${course}/` }
+    })
   }))
 }
 
