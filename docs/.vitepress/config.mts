@@ -149,6 +149,8 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#ea580c' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]
   ],
+  // 注：VitePress 会硬注入 66 KB 的 Inter 字体预加载，配置层面删不掉，
+  // 由 scripts/strip-font-preload.mjs 在构建后移除（中文站用不到 Inter）。
 
   themeConfig: {
     siteTitle: '峻熹的学习笔记',

@@ -12,8 +12,9 @@
   --vp-c-brand-3: #f97316;
   --vp-c-brand-soft: rgba(249, 115, 22, 0.14);
 
-  --vp-font-family-base: 'Inter var', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+  /* 不引用 Inter：中文站用不上，去掉可省一次 66 KB 字体下载，直接用系统字体 */
+  --vp-font-family-base: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
   --vp-font-family-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
 
   /* 首页大标题的渐变（VitePress 官方变量，比直接改 .clip 安全） */

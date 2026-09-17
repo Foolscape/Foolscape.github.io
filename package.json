@@ -7,7 +7,7 @@
   "scripts": {
     "index": "node scripts/build-index.mjs",
     "docs:dev": "npm run index && vitepress dev docs",
-    "docs:build": "npm run index && vitepress build docs",
+    "docs:build": "npm run index && vitepress build docs && node scripts/strip-font-preload.mjs",
     "docs:preview": "npm run index && vitepress preview docs"
   },
   "devDependencies": {
