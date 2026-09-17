@@ -6,11 +6,11 @@
    ============================================================ */
 
 :root {
-  /* 主色：青蓝 teal。当前用 #0f766e / #0d9488 / #14b8a6 */
-  --vp-c-brand-1: #0f766e;
-  --vp-c-brand-2: #0d9488;
-  --vp-c-brand-3: #14b8a6;
-  --vp-c-brand-soft: rgba(13, 148, 136, 0.14);
+  /* 主色：砖红 / 暖橙。想换色只改这 4 行 */
+  --vp-c-brand-1: #c2410c;
+  --vp-c-brand-2: #ea580c;
+  --vp-c-brand-3: #f97316;
+  --vp-c-brand-soft: rgba(249, 115, 22, 0.14);
 
   --vp-font-family-base: 'Inter var', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
@@ -18,22 +18,22 @@
 
   /* 首页大标题的渐变（VitePress 官方变量，比直接改 .clip 安全） */
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #0f766e 15%, #2dd4bf);
-  --vp-home-hero-image-background-image: linear-gradient(-45deg, #2dd4bf 40%, #0f766e 60%);
+  --vp-home-hero-name-background: linear-gradient(120deg, #b45309 10%, #f59e0b 85%);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #fbbf24 35%, #c2410c 65%);
   --vp-home-hero-image-filter: blur(56px);
 
-  --my-selection: rgba(13, 148, 136, 0.22);
+  --my-selection: rgba(249, 115, 22, 0.22);
 }
 
 .dark {
-  --vp-c-brand-1: #5eead4;
-  --vp-c-brand-2: #2dd4bf;
-  --vp-c-brand-3: #14b8a6;
-  --vp-c-brand-soft: rgba(45, 212, 191, 0.16);
+  --vp-c-brand-1: #fdba74;
+  --vp-c-brand-2: #fb923c;
+  --vp-c-brand-3: #f97316;
+  --vp-c-brand-soft: rgba(251, 146, 60, 0.16);
 
-  --vp-home-hero-name-background: linear-gradient(120deg, #5eead4 15%, #14b8a6);
+  --vp-home-hero-name-background: linear-gradient(120deg, #fcd34d 10%, #fb923c 85%);
 
-  --my-selection: rgba(45, 212, 191, 0.26);
+  --my-selection: rgba(251, 146, 60, 0.28);
 }
 
 ::selection {

@@ -128,7 +128,7 @@ export default defineConfig({
 
   head: [
     ['meta', { name: 'author', content: '顾峻熹 Foolscape' }],
-    ['meta', { name: 'theme-color', content: '#0d9488' }],
+    ['meta', { name: 'theme-color', content: '#ea580c' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]
   ],
 
