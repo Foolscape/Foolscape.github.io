@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import mathjax3 from 'markdown-it-mathjax3'
 
 const DOCS = fileURLToPath(new URL('..', import.meta.url))
 const COURSE_DIR = path.join(DOCS, '专业课')
@@ -125,6 +126,23 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   ignoreDeadLinks: [/^\/资料\//],
+
+  // 数学公式：行内用 $...$，独立成行用 $$...$$
+  markdown: {
+    config: (md) => {
+      md.use(mathjax3)
+    }
+  },
+
+  // MathJax 输出的是 <mjx-container> 这种自定义标签。必须告诉 Vue 别把它当组件解析，
+  // 否则整块公式会被当成「未知组件」渲染成空占位 <!---->（这是最容易踩的坑）。
+  vue: {
+    template: {
+      compilerOptions: {
+        isCustomElement: (tag) => tag.startsWith('mjx-')
+      }
+    }
+  },
 
   head: [
     ['meta', { name: 'author', content: '顾峻熹 Foolscape' }],

@@ -191,14 +191,24 @@ Pages 现在是「从分支部署」模式，要改成「从 Actions 部署」�
 
 **笔记里的公式怎么写？**
 
-VitePress 默认不支持 LaTeX 数学公式。要用的话执行 `npm i -D markdown-it-mathjax3`，然后在 `docs/.vitepress/config.mts` 里加：
+**已经配好了，直接用。** 行内公式用单个 `$`，独立成行的公式用两个 `$`：
 
-```ts
-import mathjax3 from 'markdown-it-mathjax3'
-export default defineConfig({
-  markdown: { config: (md) => md.use(mathjax3) }
-})
+```markdown
+当 $a \ne 0$ 时，方程 $ax^2 + bx + c = 0$ 有两个解。
+
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
 ```
+
+渲染用的是 MathJax（`markdown-it-mathjax3`），在**构建时**就转成了内联 SVG，所以：
+
+- 页面打开**不需要额外下载 JS**，也不依赖 CDN，离线可用
+- 缺点是一页公式很多时 HTML 会变大（一个公式约十几 KB），但 gzip 压缩率约 7:1 —— 实测含 8 个公式的页面 gzip 后 21 KB，可接受
+
+> **配置里有个必须保留的坑**：MathJax 输出的 `<mjx-container>` 是自定义标签，必须通过 `vue.template.compilerOptions.isCustomElement` 告诉 Vue 别当组件解析，否则**整块公式会静默变成空占位 `<!---->`**（页面不报错，但公式就是不显示）。这一项在 `config.mts` 里，别删。
+>
+> 如果哪天觉得体积太大，可以换成 KaTeX（HTML 输出小得多，代价是要额外加载 CSS 和字体）。
 
 **能不能直接在网上改笔记？**
 
