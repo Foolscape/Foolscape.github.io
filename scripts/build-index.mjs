@@ -209,6 +209,139 @@ function writeSemesterPage(semester, courses) {
   console.log(`  ✓ 学期总览：docs/专业课/${semester}/index.md（${courses.length} 门课）`)
 }
 
+/** 章节进度条的标记 */
+const PROG_START = '<!-- 章节进度：开始（自动生成，勿手改这一段） -->'
+const PROG_END = '<!-- 章节进度：结束 -->'
+
+/**
+ * 统计课程页「章节规划」里的复选框（`- [x]` / `- [ ]`），在页面里画一条进度条。
+ * 没有复选框的课程不显示，不留空块。勾选状态由你自己维护，进度条每次构建自动重算。
+ */
+function syncProgress(semester, course) {
+  const indexFile = path.join(COURSE_ROOT, semester, course, 'index.md')
+  if (!fs.existsSync(indexFile)) return
+  const raw = fs.readFileSync(indexFile, 'utf-8')
+
+  const done = (raw.match(/^- \[[xX]\]/gm) || []).length
+  const todo = (raw.match(/^- \[ ?\]/gm) || []).length
+  const total = done + todo
+  const pct = total ? Math.round((done / total) * 100) : 0
+
+  const block =
+    total === 0
+      ? ''
+      : [
+          PROG_START,
+          '',
+          '<div class="course-progress">',
+          '  <div class="course-progress__row">',
+          '    <span class="course-progress__label">章节进度</span>',
+          `    <span class="course-progress__count">${done} / ${total}</span>`,
+          '  </div>',
+          '  <div class="course-progress__track">',
+          `    <div class="course-progress__fill" style="width:${pct}%"></div>`,
+          '  </div>',
+          '</div>',
+          '',
+          PROG_END
+        ].join('\n')
+
+  const s = raw.indexOf(PROG_START)
+  const e = raw.indexOf(PROG_END)
+  let next
+
+  if (s !== -1 && e > s) {
+    const before = raw.slice(0, s)
+    const after = raw.slice(e + PROG_END.length)
+    if (block) {
+      next = `${before}${block}${after}`
+    } else {
+      const b = before.replace(/\s+$/, '')
+      const a = after.replace(/^\s+/, '')
+      next = a ? `${b}\n\n${a}` : `${b}\n`
+    }
+  } else if (block) {
+    // 首次出现：优先插在「## 章节规划」标题正下方
+    const heading = raw.match(/^##\s*章节规划\s*$/m)
+    if (heading) {
+      const at = heading.index + heading[0].length
+      next = `${raw.slice(0, at)}\n\n${block}${raw.slice(at)}`
+    } else {
+      // 没有那个标题（比如实验课叫「## 实验清单」），就放在正文开头——
+      // 也就是第一个二级标题之前，别丢到文件最末尾
+      const firstH2 = raw.match(/^##\s/m)
+      if (firstH2) {
+        next = `${raw.slice(0, firstH2.index).replace(/\s*$/, '')}\n\n${block}\n\n${raw.slice(firstH2.index)}`
+      } else {
+        next = `${raw.replace(/\s*$/, '')}\n\n${block}\n`
+      }
+    }
+  }
+
+  if (next !== undefined && next !== raw) {
+    fs.writeFileSync(indexFile, next, 'utf-8')
+    console.log(`  ✓ 章节进度：${semester}/${course}（${done} / ${total}）`)
+  }
+}
+
+/** 课程卡片网格的标记 */
+const CARD_START = '<!-- 课程卡片：开始（自动生成，勿手改这一段） -->'
+const CARD_END = '<!-- 课程卡片：结束 -->'
+
+function escHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+/** 把「专业课」首页的朴素表格换成课程卡片网格 */
+function syncCourseCards(bySemester) {
+  const cards = []
+  for (const [semester, courses] of bySemester) {
+    for (const course of courses) {
+      const n = listFiles(path.join(ASSET_ROOT, semester, course)).length
+      cards.push(
+        `  <a class="course-card" href="/专业课/${semester}/${course}/">\n` +
+          `    <span class="course-card__term">${escHtml(semester)}</span>\n` +
+          `    <span class="course-card__name">${escHtml(course)}</span>\n` +
+          `    <span class="course-card__meta">${n > 0 ? `${n} 份资料` : '暂无资料'}</span>\n` +
+          `  </a>`
+      )
+    }
+  }
+
+  const block =
+    cards.length === 0
+      ? ''
+      : `${CARD_START}\n\n<div class="course-grid">\n${cards.join('\n')}\n</div>\n\n${CARD_END}`
+
+  const indexFile = path.join(COURSE_ROOT, 'index.md')
+  if (!fs.existsSync(indexFile)) return
+  const raw = fs.readFileSync(indexFile, 'utf-8')
+  const s = raw.indexOf(CARD_START)
+  const e = raw.indexOf(CARD_END)
+  let next
+
+  if (s !== -1 && e > s) {
+    const before = raw.slice(0, s)
+    const after = raw.slice(e + CARD_END.length)
+    if (block) {
+      next = `${before}${block}${after}`
+    } else {
+      const b = before.replace(/\s+$/, '')
+      const a = after.replace(/^\s+/, '')
+      next = a ? `${b}\n\n${a}` : `${b}\n`
+    }
+  } else if (block) {
+    const h1 = raw.match(/^#\s+.+$/m)
+    const at = h1 ? h1.index + h1[0].length : 0
+    next = `${raw.slice(0, at)}\n\n${block}${raw.slice(at)}`
+  }
+
+  if (next !== undefined && next !== raw) {
+    fs.writeFileSync(indexFile, next, 'utf-8')
+    console.log(`  ✓ 课程卡片：docs/专业课/index.md（${cards.length} 门课）`)
+  }
+}
+
 function main() {
   fs.mkdirSync(COURSE_ROOT, { recursive: true })
   fs.mkdirSync(ASSET_ROOT, { recursive: true })
@@ -222,6 +355,7 @@ function main() {
     return
   }
 
+  const bySemester = []
   for (const semester of semesters) {
     const stray = listMd(path.join(COURSE_ROOT, semester)).filter((f) => f !== 'index.md')
     if (stray.length) {
@@ -243,8 +377,12 @@ function main() {
     for (const course of courses) {
       ensureCourse(semester, course)
       syncCourseAssets(semester, course)
+      syncProgress(semester, course)
     }
+    bySemester.push([semester, courses])
   }
+
+  syncCourseCards(bySemester)
   console.log('[build-index] 完成。')
 }
 

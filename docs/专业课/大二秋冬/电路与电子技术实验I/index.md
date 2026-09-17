@@ -2,6 +2,20 @@
 
 > 大二秋冬 · 电路与电子技术实验I 的笔记与实验记录。
 
+<!-- 章节进度：开始（自动生成，勿手改这一段） -->
+
+<div class="course-progress">
+  <div class="course-progress__row">
+    <span class="course-progress__label">章节进度</span>
+    <span class="course-progress__count">0 / 8</span>
+  </div>
+  <div class="course-progress__track">
+    <div class="course-progress__fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- 章节进度：结束 -->
+
 ## 课程信息
 
 | 项目 | 内容 |
@@ -31,9 +45,11 @@
 
 ## 容易扣分的地方
 
-> 每次实验前扫一眼，能省掉大部分返工。
+::: warning 每次实验前扫一眼，能省掉大部分返工
 
 - **示波器探头衰减**：用 ×10 探头时，读数要乘 10，忘了就全错
 - **接地**：示波器探头的地夹必须接电路参考地，否则波形是噪声
 - **读数有效数字**：仪器精度决定有效位数，多写一位是错的
 - **误差分析**：要区分**系统误差**和**随机误差**，不能只写"操作不熟练"
+
+:::

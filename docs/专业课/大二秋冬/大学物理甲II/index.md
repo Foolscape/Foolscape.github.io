@@ -14,6 +14,20 @@
 
 ## 章节规划
 
+
+<!-- 章节进度：开始（自动生成，勿手改这一段） -->
+
+<div class="course-progress">
+  <div class="course-progress__row">
+    <span class="course-progress__label">章节进度</span>
+    <span class="course-progress__count">0 / 11</span>
+  </div>
+  <div class="course-progress__track">
+    <div class="course-progress__fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- 章节进度：结束 -->
 > 下面是按常见大纲列的清单，**请按你的实际教学进度增删**。学完一章把 `- [ ]` 改成 `- [x]`。
 
 - [ ] 第 01 章 静电场

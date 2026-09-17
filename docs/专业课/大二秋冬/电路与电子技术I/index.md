@@ -14,6 +14,20 @@
 
 ## 章节规划
 
+
+<!-- 章节进度：开始（自动生成，勿手改这一段） -->
+
+<div class="course-progress">
+  <div class="course-progress__row">
+    <span class="course-progress__label">章节进度</span>
+    <span class="course-progress__count">0 / 6</span>
+  </div>
+  <div class="course-progress__track">
+    <div class="course-progress__fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- 章节进度：结束 -->
 > 按你课件 `秋学期电路原理课件/` 里的实际划分整理，共 6 章。学完一章把 `- [ ]` 改成 `- [x]`，就能当进度条用。
 
 - [ ] 第 01 章 基本概念和定律
