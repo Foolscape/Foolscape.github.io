@@ -74,34 +74,20 @@ function ensureCourse(semester, course) {
         `> ${semester} · ${course} 的笔记总览。把章节 \`.md\` 放到 \`docs/专业课/${semester}/${course}/\` 下，侧边栏会自动出现。\n\n` +
         `## 课程信息\n\n| 项目 | 内容 |\n| --- | --- |\n| 学期 | ${semester} |\n| 教材 | 待填 |\n| 教师 | 待填 |\n| 考核 | 待填 |\n\n` +
         `## 笔记\n\n在左侧目录中选择章节开始阅读。\n\n` +
-        `## 资料\n\n课件、扫描件、真题放在 \`docs/public/资料/${semester}/${course}/\`，会自动汇总到 [资料下载](./资料下载)。\n`,
+        `## 资料\n\n把你自己产出的笔记、扫描件放到 \`docs/public/资料/${semester}/${course}/\`，会自动列在本页末尾。\n`,
       'utf-8'
     )
     console.log(`  + 新建课程页：docs/专业课/${semester}/${course}/index.md`)
   }
 }
 
-/**
- * 生成某门课的「资料下载.md」
- *
- * 只在**真的有文件**时才生成 —— 否则每门课都挂一个「还没有资料文件」的空页面，
- * 侧边栏会非常臃肿。文件被删光时，把之前生成的页面一并清理掉。
- */
-function writeAssetPage(semester, course) {
+/** 资料列表在课程页里的标记，方便原地替换与整段移除 */
+const MARK_START = '<!-- 资料列表：开始（自动生成，勿手改这一段） -->'
+const MARK_END = '<!-- 资料列表：结束 -->'
+
+/** 渲染资料列表区块 */
+function renderAssetBlock(semester, course, files) {
   const assetDir = path.join(ASSET_ROOT, semester, course)
-  fs.mkdirSync(assetDir, { recursive: true })
-
-  const files = listFiles(assetDir).sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
-  const target = path.join(COURSE_ROOT, semester, course, '资料下载.md')
-
-  if (files.length === 0) {
-    if (fs.existsSync(target)) {
-      fs.rmSync(target)
-      console.log(`  - 无资料，移除空页面：docs/专业课/${semester}/${course}/资料下载.md`)
-    }
-    return
-  }
-
   const rows = files
     .map((rel) => {
       const size = fs.statSync(path.join(assetDir, rel)).size
@@ -111,31 +97,81 @@ function writeAssetPage(semester, course) {
     })
     .join('\n')
 
-  fs.writeFileSync(
-    target,
-    `---\ntitle: 资料下载\n---\n\n<!-- ${GENERATED_BY} -->\n\n` +
-      `# ${course} · 资料下载\n\n共 ${files.length} 个文件。\n\n` +
-      `| 文件 | 类型 | 大小 |\n| --- | --- | --- |\n${rows}\n`,
-    'utf-8'
-  )
-  console.log(`  ✓ 资料索引：docs/专业课/${semester}/${course}/资料下载.md（${files.length} 个文件）`)
+  return [
+    MARK_START,
+    '',
+    '## 资料文件',
+    '',
+    `共 ${files.length} 个文件。`,
+    '',
+    '| 文件 | 类型 | 大小 |',
+    '| --- | --- | --- |',
+    rows,
+    '',
+    MARK_END
+  ].join('\n')
 }
 
 /**
- * 安全网：课程页里写了 [资料下载](./资料下载) 但这门课没有文件时，
- * 目标页面不存在，构建会因为死链直接失败。这里提前给出明确警告。
+ * 把资料列表**合并进课程页本身**，不再单独开一个「资料下载」页。
+ *
+ * 列表用标记包起来：每次构建原地替换，文件删光时整段移除。
+ * 标记不存在时追加到页面末尾 —— 所以你可以把它整段拖到任意位置，位置会被保留。
  */
-function checkAssetLinks(semester, course) {
+function syncCourseAssets(semester, course) {
+  const assetDir = path.join(ASSET_ROOT, semester, course)
+  fs.mkdirSync(assetDir, { recursive: true })
+
+  const files = listFiles(assetDir).sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
   const dir = path.join(COURSE_ROOT, semester, course)
-  const pageExists = fs.existsSync(path.join(dir, '资料下载.md'))
-  if (pageExists) return
+  const indexFile = path.join(dir, 'index.md')
+
+  // 迁移：删掉早期版本生成的独立「资料下载」页
+  const legacy = path.join(dir, '资料下载.md')
+  if (fs.existsSync(legacy)) {
+    fs.rmSync(legacy)
+    console.log(`  - 移除旧的独立资料页：docs/专业课/${semester}/${course}/资料下载.md`)
+  }
+
+  if (fs.existsSync(indexFile)) {
+    const raw = fs.readFileSync(indexFile, 'utf-8')
+    const block = files.length ? renderAssetBlock(semester, course, files) : ''
+    const s = raw.indexOf(MARK_START)
+    const e = raw.indexOf(MARK_END)
+    let next
+
+    if (s !== -1 && e > s) {
+      // 已有标记：原地替换；没有文件时连标记整段删掉
+      const before = raw.slice(0, s)
+      const after = raw.slice(e + MARK_END.length)
+      if (block) {
+        next = `${before}${block}${after}`
+      } else {
+        const b = before.replace(/\s+$/, '')
+        const a = after.replace(/^\s+/, '')
+        next = a ? `${b}\n\n${a}` : `${b}\n`
+      }
+    } else if (block) {
+      // 首次出现：追加到页面末尾
+      next = `${raw.replace(/\s*$/, '')}\n\n${block}\n`
+    }
+
+    if (next !== undefined && next !== raw) {
+      fs.writeFileSync(indexFile, next, 'utf-8')
+      console.log(
+        block
+          ? `  ✓ 资料列表已并入课程页：${semester}/${course}/index.md（${files.length} 个文件）`
+          : `  - 无资料，移除课程页里的资料列表：${semester}/${course}/index.md`
+      )
+    }
+  }
+
+  // 安全网：还留着指向旧「资料下载」页的链接会导致死链、构建失败
   for (const f of listMd(dir)) {
-    if (f === '资料下载.md') continue
-    const raw = fs.readFileSync(path.join(dir, f), 'utf-8')
-    if (/\]\(\.\/资料下载\)/.test(raw)) {
+    if (fs.readFileSync(path.join(dir, f), 'utf-8').includes('](./资料下载)')) {
       console.warn(
-        `[build-index] ⚠ ${semester}/${course}/${f} 里链接了「资料下载」，但这门课还没有资料文件，页面不存在。` +
-          `\n             构建会因为死链失败 —— 请删掉该链接，或往 docs/public/资料/${semester}/${course}/ 放文件。`
+        `[build-index] ⚠ ${semester}/${course}/${f} 里还有 [资料下载](./资料下载) 这种链接，` +
+          `那个页面已经不存在了，构建会因为死链失败 —— 改成 [资料文件](#资料文件) 或直接删掉。`
       )
     }
   }
@@ -190,8 +226,7 @@ function main() {
     writeSemesterPage(semester, courses)
     for (const course of courses) {
       ensureCourse(semester, course)
-      writeAssetPage(semester, course)
-      checkAssetLinks(semester, course)
+      syncCourseAssets(semester, course)
     }
   }
   console.log('[build-index] 完成。')
