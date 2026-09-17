@@ -1,0 +1,16 @@
+{
+  "name": "foolscape-notes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "顾峻熹（Foolscape / Junxiii）的学习笔记站：按专业课分类的 Markdown 笔记与 PDF 资料",
+  "scripts": {
+    "index": "node scripts/build-index.mjs",
+    "docs:dev": "npm run index && vitepress dev docs",
+    "docs:build": "npm run index && vitepress build docs",
+    "docs:preview": "npm run index && vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

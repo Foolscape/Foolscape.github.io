@@ -1,0 +1,25 @@
+# 统一换行符：仓库内存 LF，Windows 检出时自动转 CRLF
+# 避免本地是 Windows、构建机是 Linux 时出现整文件 diff
+* text=auto
+
+*.md   text
+*.mts  text
+*.ts   text
+*.mjs  text
+*.json text
+*.yml  text
+*.css  text
+
+# 二进制文件不要做换行符转换，否则文件会损坏
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.gif  binary
+*.zip  binary
+*.7z   binary
+*.rar  binary
+*.docx binary
+*.pptx binary
+*.xlsx binary

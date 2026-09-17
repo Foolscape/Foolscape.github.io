@@ -1,0 +1,34 @@
+/* 中文字体与阅读体验微调 */
+
+:root {
+  --vp-font-family-base: 'Inter var', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
+}
+
+/* 正文稍宽一点，看笔记更舒服 */
+.VPDoc:not(.has-sidebar) .content-container,
+.VPDoc.has-aside .content-container {
+  max-width: 760px;
+}
+
+/* 中文段落行距放宽 */
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.8;
+}
+
+/* 表格：资料下载页用得多，加个横向滚动防止溢出 */
+.vp-doc table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* 引用块更像「批注」 */
+.vp-doc blockquote {
+  border-left-width: 3px;
+  border-radius: 0 6px 6px 0;
+  background-color: var(--vp-c-bg-soft);
+  padding: 8px 16px;
+}

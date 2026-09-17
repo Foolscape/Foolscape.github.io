@@ -1,0 +1,14 @@
+node_modules/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+.npm-cache/
+debug.log
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
