@@ -4,6 +4,9 @@ docs/.vitepress/cache/
 .npm-cache/
 debug.log
 *.log
+
+# 本地原始文件：体积大，只留在本地，不提交、不部署
+_原始文件/
 .DS_Store
 Thumbs.db
 desktop.ini

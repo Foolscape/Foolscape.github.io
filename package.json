@@ -8,10 +8,14 @@
     "index": "node scripts/build-index.mjs",
     "docs:dev": "npm run index && vitepress dev docs",
     "docs:build": "npm run index && vitepress build docs && node scripts/strip-font-preload.mjs",
-    "docs:preview": "npm run index && vitepress preview docs"
+    "docs:preview": "npm run index && vitepress preview docs",
+    "pdf:shrink": "node scripts/shrink-pdf.mjs"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.9",
     "markdown-it-mathjax3": "^4.3.2",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.3.289",
     "vitepress": "^1.6.4"
   }
 }

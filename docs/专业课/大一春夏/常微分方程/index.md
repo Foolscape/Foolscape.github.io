@@ -26,7 +26,7 @@
 
 | 文件 | 类型 | 大小 |
 | --- | --- | --- |
-| [ode笔记.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0.pdf) | PDF | 8.25 MB |
+| [ode笔记.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0.pdf) | PDF | 2.00 MB |
 
 <PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%B8%80%E6%98%A5%E5%A4%8F/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B/ode%E7%AC%94%E8%AE%B0.pdf" title="ode笔记.pdf" />
 
