@@ -1,34 +1,153 @@
-/* 中文字体与阅读体验微调 */
+/* ============================================================
+   峻熹的学习笔记 · 主题微调
+   ------------------------------------------------------------
+   想换配色？只改下面 :root 和 .dark 里的 4 个 --vp-c-brand-* 变量，
+   整站（链接、按钮、侧边栏高亮、行内代码）会自动跟着变。
+   ============================================================ */
 
 :root {
+  /* 主色：青蓝 teal。当前用 #0f766e / #0d9488 / #14b8a6 */
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #0d9488;
+  --vp-c-brand-3: #14b8a6;
+  --vp-c-brand-soft: rgba(13, 148, 136, 0.14);
+
   --vp-font-family-base: 'Inter var', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
   --vp-font-family-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, 'Courier New', monospace;
+
+  /* 首页大标题的渐变（VitePress 官方变量，比直接改 .clip 安全） */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #0f766e 15%, #2dd4bf);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #2dd4bf 40%, #0f766e 60%);
+  --vp-home-hero-image-filter: blur(56px);
+
+  --my-selection: rgba(13, 148, 136, 0.22);
 }
 
-/* 正文稍宽一点，看笔记更舒服 */
-.VPDoc:not(.has-sidebar) .content-container,
-.VPDoc.has-aside .content-container {
-  max-width: 760px;
+.dark {
+  --vp-c-brand-1: #5eead4;
+  --vp-c-brand-2: #2dd4bf;
+  --vp-c-brand-3: #14b8a6;
+  --vp-c-brand-soft: rgba(45, 212, 191, 0.16);
+
+  --vp-home-hero-name-background: linear-gradient(120deg, #5eead4 15%, #14b8a6);
+
+  --my-selection: rgba(45, 212, 191, 0.26);
 }
+
+::selection {
+  background: var(--my-selection);
+}
+
+/* ---------------- 首页 ---------------- */
+
+/* 特性卡片：圆角 + 悬浮微抬 */
+.VPFeature {
+  border-radius: 14px;
+  border: 1px solid var(--vp-c-divider);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.VPFeature:hover {
+  transform: translateY(-3px);
+  border-color: var(--vp-c-brand-2);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.07);
+}
+.dark .VPFeature:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+}
+
+.VPButton {
+  border-radius: 10px;
+}
+
+/* ---------------- 正文排版 ---------------- */
 
 /* 中文段落行距放宽 */
 .vp-doc p,
 .vp-doc li {
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
-/* 表格：资料下载页用得多，加个横向滚动防止溢出 */
+/* 二级标题上面加条分隔线，长笔记更好定位 */
+.vp-doc h2 {
+  margin-top: 2.4em;
+  padding-top: 20px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+/* 链接平时不划线，悬浮才划 */
+.vp-doc a {
+  text-decoration: none;
+  font-weight: 500;
+}
+.vp-doc a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 行内代码：用主色淡底，比默认灰色更清楚 */
+.vp-doc :not(pre) > code {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: 0.88em;
+}
+
+/* 引用块做成「批注」的样子 */
+.vp-doc blockquote {
+  border-left: 3px solid var(--vp-c-brand-2);
+  border-radius: 0 8px 8px 0;
+  background: var(--vp-c-bg-soft);
+  padding: 10px 18px;
+  color: var(--vp-c-text-2);
+}
+.vp-doc blockquote > p {
+  margin: 6px 0;
+}
+
+/* 表格：圆角 + 斑马纹 + 横向滚动防溢出（资料列表用得多） */
 .vp-doc table {
   display: block;
   overflow-x: auto;
   white-space: nowrap;
+  border-radius: 10px;
+}
+.vp-doc tr:nth-child(2n) {
+  background: var(--vp-c-bg-soft);
+}
+.vp-doc th {
+  background: var(--vp-c-brand-soft);
 }
 
-/* 引用块更像「批注」 */
-.vp-doc blockquote {
-  border-left-width: 3px;
-  border-radius: 0 6px 6px 0;
-  background-color: var(--vp-c-bg-soft);
-  padding: 8px 16px;
+/* 图片圆角；VitePress 自带点击放大（medium-zoom） */
+.vp-doc img {
+  border-radius: 10px;
+}
+
+/* ---------------- 侧边栏 ---------------- */
+
+.VPSidebarItem.level-0 > .item > .text {
+  font-weight: 600;
+}
+.VPSidebarItem.is-active > .item .link .text {
+  color: var(--vp-c-brand-1);
+}
+
+/* ---------------- 滚动条 ---------------- */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--vp-c-divider);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-brand-2);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }

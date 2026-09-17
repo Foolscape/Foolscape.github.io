@@ -128,11 +128,13 @@ export default defineConfig({
 
   head: [
     ['meta', { name: 'author', content: '顾峻熹 Foolscape' }],
-    ['meta', { name: 'theme-color', content: '#3451b2' }]
+    ['meta', { name: 'theme-color', content: '#0d9488' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]
   ],
 
   themeConfig: {
     siteTitle: '峻熹的学习笔记',
+    logo: '/logo.svg',
 
     nav: [
       { text: '首页', link: '/' },
