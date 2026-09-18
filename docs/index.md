@@ -19,10 +19,6 @@ hero:
 
 <!-- 首页看板：开始（自动生成，勿手改这一段） -->
 <div class="home-dash">
-  <div class="home-glows" aria-hidden="true">
-    <span class="home-glow home-glow--a"></span>
-    <span class="home-glow home-glow--b"></span>
-  </div>
   <div class="home-stats">
   <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">个学期</span></div>
   <div class="home-stat"><span class="home-stat__num">6</span><span class="home-stat__label">门课程</span></div>

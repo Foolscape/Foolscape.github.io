@@ -362,58 +362,6 @@ html.has-aplayer-fixed .VPFooter {
   margin-top: 8px;
 }
 
-/*
- * 两团缓慢漂移的暖色光斑。
- * 放在独立的裁剪层里，这样光斑不会溢出造成横向滚动条，
- * 又不会把卡片悬浮时的阴影一起裁掉。
- */
-.home-glows {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 18px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.home-glow {
-  position: absolute;
-  width: 440px;
-  height: 440px;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
-  animation: home-drift 15s ease-in-out infinite alternate;
-}
-
-.home-glow--a {
-  top: -170px;
-  left: -120px;
-  background: radial-gradient(circle, #f59e0b, transparent 70%);
-}
-
-.home-glow--b {
-  top: 0;
-  right: -140px;
-  background: radial-gradient(circle, #c2410c, transparent 70%);
-  animation-delay: -7s;
-}
-
-@keyframes home-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(90px, 60px, 0) scale(1.25);
-  }
-}
-
-/* 内容压到光斑上面一层 */
-.home-dash > *:not(.home-glows) {
-  position: relative;
-  z-index: 1;
-}
-
 /* --- 滚动入场：元素进入视口时才浮现（由 HomeFx.vue 加 .is-in） --- */
 
 .home-stat,
@@ -679,7 +627,6 @@ html.has-aplayer-fixed .VPFooter {
     transition: none;
   }
 
-  .home-glow,
   .home-dash .log-item::before,
   .VPHero .name .clip {
     animation: none;
@@ -807,42 +754,20 @@ html.has-aplayer-fixed .VPFooter {
   color: var(--vp-c-text-1);
 }
 
-/* ---------------- 背景特效 ---------------- */
+/* ---------------- 背景纹理 ---------------- */
 
 /*
- * 两个背景特效都可以单独关掉，改 :root 里的变量就行：
- *   --my-spotlight: 0   → 关掉鼠标跟随光晕
- *   --my-grain: 0       → 关掉噪点颗粒
+ * 只保留中性的噪点颗粒 —— 彩色背景光晕（橙色）已按反馈去掉：
+ * 强调色用在文字和细线上是对的，铺成大面积环境色就太重了。
+ *
+ * 想关掉颗粒：把 --my-grain 改成 0。
  */
 :root {
-  --my-spotlight: 0.09;
   --my-grain: 0.035;
 }
 
 .dark {
-  --my-spotlight: 0.13;
   --my-grain: 0.05;
-}
-
-/* 鼠标跟随光晕：一束很淡的暖光，用 lerp 缓动追上光标 */
-.spotlight {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 520px;
-  height: 520px;
-  margin: -260px 0 0 -260px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 20;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  background: radial-gradient(
-    circle,
-    rgba(249, 115, 22, var(--my-spotlight)) 0%,
-    transparent 62%
-  );
-  will-change: transform;
 }
 
 /* 噪点颗粒：一层极淡的胶片颗粒，让纯色背景不那么"塑料"。
@@ -858,14 +783,7 @@ body::after {
   background-size: 180px 180px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .spotlight {
-    display: none;
-  }
-}
-
 @media print {
-  .spotlight,
   body::after {
     display: none !important;
   }
