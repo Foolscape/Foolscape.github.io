@@ -378,25 +378,25 @@ html.has-aplayer-fixed .VPFooter {
 
 .home-glow {
   position: absolute;
-  width: 360px;
-  height: 360px;
+  width: 440px;
+  height: 440px;
   border-radius: 50%;
-  filter: blur(90px);
-  opacity: 0.32;
-  animation: home-drift 24s ease-in-out infinite alternate;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: home-drift 15s ease-in-out infinite alternate;
 }
 
 .home-glow--a {
-  top: -150px;
-  left: -110px;
+  top: -170px;
+  left: -120px;
   background: radial-gradient(circle, #f59e0b, transparent 70%);
 }
 
 .home-glow--b {
-  top: 10px;
-  right: -130px;
+  top: 0;
+  right: -140px;
   background: radial-gradient(circle, #c2410c, transparent 70%);
-  animation-delay: -11s;
+  animation-delay: -7s;
 }
 
 @keyframes home-drift {
@@ -404,7 +404,7 @@ html.has-aplayer-fixed .VPFooter {
     transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    transform: translate3d(52px, 38px, 0) scale(1.18);
+    transform: translate3d(90px, 60px, 0) scale(1.25);
   }
 }
 
@@ -414,76 +414,74 @@ html.has-aplayer-fixed .VPFooter {
   z-index: 1;
 }
 
-/* --- 入场错落浮现（纯 CSS，不用 JS，也不会闪烁） --- */
-
-@keyframes home-rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
+/* --- 滚动入场：元素进入视口时才浮现（由 HomeFx.vue 加 .is-in） --- */
 
 .home-stat,
 .home-dash .course-row,
 .home-dash .log-item,
 .home-dash .home-h2 {
-  animation: home-rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.62s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.62s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.home-dash .home-h2 {
-  animation-delay: 0.02s;
+.home-stat.is-in,
+.home-dash .course-row.is-in,
+.home-dash .log-item.is-in,
+.home-dash .home-h2.is-in {
+  opacity: 1;
+  transform: none;
 }
 
+/* 同一组内依次浮现 */
 .home-stat:nth-child(1) {
-  animation-delay: 0.05s;
+  transition-delay: 0.04s;
 }
 .home-stat:nth-child(2) {
-  animation-delay: 0.12s;
+  transition-delay: 0.1s;
 }
 .home-stat:nth-child(3) {
-  animation-delay: 0.19s;
+  transition-delay: 0.16s;
 }
 .home-stat:nth-child(4) {
-  animation-delay: 0.26s;
+  transition-delay: 0.22s;
 }
 
 .home-dash .course-row:nth-child(1) {
-  animation-delay: 0.05s;
+  transition-delay: 0.04s;
 }
 .home-dash .course-row:nth-child(2) {
-  animation-delay: 0.11s;
+  transition-delay: 0.09s;
 }
 .home-dash .course-row:nth-child(3) {
-  animation-delay: 0.17s;
+  transition-delay: 0.14s;
 }
 .home-dash .course-row:nth-child(4) {
-  animation-delay: 0.23s;
+  transition-delay: 0.19s;
 }
 .home-dash .course-row:nth-child(5) {
-  animation-delay: 0.29s;
+  transition-delay: 0.24s;
 }
 .home-dash .course-row:nth-child(6) {
-  animation-delay: 0.35s;
+  transition-delay: 0.29s;
 }
 
 .home-dash .log-item:nth-child(1) {
-  animation-delay: 0.05s;
+  transition-delay: 0.04s;
 }
 .home-dash .log-item:nth-child(2) {
-  animation-delay: 0.12s;
+  transition-delay: 0.1s;
 }
 .home-dash .log-item:nth-child(3) {
-  animation-delay: 0.19s;
+  transition-delay: 0.16s;
 }
 .home-dash .log-item:nth-child(4) {
-  animation-delay: 0.26s;
+  transition-delay: 0.22s;
 }
 .home-dash .log-item:nth-child(5) {
-  animation-delay: 0.33s;
+  transition-delay: 0.28s;
 }
 
 /* --- 数据统计：一行淡文字，不做成 KPI 盒子 --- */
@@ -655,8 +653,8 @@ html.has-aplayer-fixed .VPFooter {
 /* --- hero 大标题的渐变缓缓流动 --- */
 
 .VPHero .name .clip {
-  background-size: 220% 100%;
-  animation: home-shift 9s ease-in-out infinite alternate;
+  background-size: 260% 100%;
+  animation: home-shift 5s ease-in-out infinite alternate;
 }
 
 @keyframes home-shift {
@@ -671,10 +669,16 @@ html.has-aplayer-fixed .VPFooter {
 /* --- 尊重系统的「减少动态效果」设置 --- */
 
 @media (prefers-reduced-motion: reduce) {
+  /* 不给动效，但也绝不能把内容藏起来 */
   .home-stat,
   .home-dash .course-row,
   .home-dash .log-item,
-  .home-dash .home-h2,
+  .home-dash .home-h2 {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   .home-glow,
   .home-dash .log-item::before,
   .VPHero .name .clip {

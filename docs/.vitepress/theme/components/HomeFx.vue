@@ -2,19 +2,29 @@
 import { onMounted } from 'vue'
 
 /**
- * 首页动效：统计数字滚动。
+ * 首页动效控制器。
  *
- * 只做 JS 才能做的那一件事 —— 其余动效（入场错落、悬浮、渐变流动、
- * 光斑漂移）全部用纯 CSS 实现，见 custom.css 的「首页动效」一节。
+ * 做两件事：
+ *  1. 滚动入场 —— 元素进入视口时才浮现（元素初始 opacity:0 写在 custom.css 里）
+ *  2. 数字滚动 —— 统计数字进入视口时从 0 滚上去
  *
- * 尊重系统的「减少动态效果」设置：开了就直接显示最终数字。
- * 关掉 JS 也没关系 —— 服务端渲染出来的就是真实数字，不会显示成 0。
+ * ⚠️ 因为元素默认是隐藏的，一旦这个脚本没跑起来，内容就会看不见。
+ *    所以有两道兜底：
+ *      · <noscript> 里的样式 —— 关掉 JS 时直接显示
+ *      · config.mts head 里的一段内联脚本 —— 2 秒后检查本脚本是否执行过，
+ *        没执行就把所有元素显示出来
  */
-onMounted(() => {
-  const nums = document.querySelectorAll('.home-stat__num')
-  if (!nums.length) return
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+const REVEAL_SELECTOR =
+  '.home-stat, .home-dash .course-row, .home-dash .log-item, .home-dash .home-h2'
 
+onMounted(() => {
+  // 给兜底脚本留个标记：动效脚本已经跑起来了
+  window.__fxReady = true
+
+  const all = document.querySelectorAll(REVEAL_SELECTOR)
+  const showAll = () => all.forEach((el) => el.classList.add('is-in'))
+
+  const nums = document.querySelectorAll('.home-stat__num')
   const countUp = (el) => {
     const target = parseInt(el.textContent, 10)
     if (!Number.isFinite(target) || target <= 0) return
@@ -33,19 +43,40 @@ onMounted(() => {
     requestAnimationFrame(tick)
   }
 
-  const io = new IntersectionObserver(
+  // 系统开了「减少动态效果」就直接全显示、不滚数字
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    showAll()
+    return
+  }
+
+  // 1) 滚动入场
+  const reveal = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          countUp(entry.target)
-          io.unobserve(entry.target)
+          entry.target.classList.add('is-in')
+          reveal.unobserve(entry.target)
+        }
+      }
+    },
+    { rootMargin: '0px 0px -6% 0px', threshold: 0.1 }
+  )
+  all.forEach((el) => reveal.observe(el))
+
+  // 2) 数字滚动：比卡片浮现稍晚一点开始，看起来像是「卡片浮上来，数字跟着跳上去」
+  const counting = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const el = entry.target
+          counting.unobserve(el)
+          setTimeout(() => countUp(el), 260)
         }
       }
     },
     { threshold: 0.4 }
   )
-
-  nums.forEach((n) => io.observe(n))
+  nums.forEach((n) => counting.observe(n))
 })
 </script>
 
