@@ -85,6 +85,25 @@ function ensureCourse(semester, course) {
 const MARK_START = '<!-- 资料列表：开始（自动生成，勿手改这一段） -->'
 const MARK_END = '<!-- 资料列表：结束 -->'
 
+/**
+ * 资料栏目的展示顺序。写在里面的排前面，没写的按拼音排在其后。
+ * 想调整顺序改这一行就行（比如把「真题」提到最前）。
+ */
+const FOLDER_ORDER = ['作业', '笔记', '真题', '课件']
+
+function sortFolders(list) {
+  return [...list].sort((a, b) => {
+    const ia = FOLDER_ORDER.indexOf(a)
+    const ib = FOLDER_ORDER.indexOf(b)
+    if (ia !== -1 || ib !== -1) {
+      if (ia === -1) return 1
+      if (ib === -1) return -1
+      return ia - ib
+    }
+    return a.localeCompare(b, 'zh-CN', { numeric: true })
+  })
+}
+
 /** 转义 HTML 属性值里的特殊字符 */
 function escAttr(s) {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
@@ -97,7 +116,7 @@ function escAttr(s) {
  * 以前是「每个 PDF 一个预览条」，一学期攒下十几份作业就会堆出十几个一样的方框。
  * 改成列表 + 共享预览区之后，无论多少文件，预览区永远只有一个。
  */
-function renderAssetBlock(semester, course, files) {
+function renderAssetBlock(semester, course, files, folders) {
   const assetDir = path.join(ASSET_ROOT, semester, course)
 
   const items = files.map((rel) => ({
@@ -107,8 +126,9 @@ function renderAssetBlock(semester, course, files) {
     size: humanSize(fs.statSync(path.join(assetDir, rel)).size)
   }))
 
-  // 属性用单引号包，所以只需转义 & 和 '（组件里会被解码回合法 JSON）
-  const attr = JSON.stringify(items).replace(/&/g, '&amp;').replace(/'/g, '&#39;')
+  // 属性都用单引号包，所以只需转义 & 和 '（组件里会被解码回合法 JSON）
+  const esc = (json) => json.replace(/&/g, '&amp;').replace(/'/g, '&#39;')
+  const folderAttr = folders.length ? ` :folders='${esc(JSON.stringify(folders))}'` : ''
 
   return [
     MARK_START,
@@ -117,7 +137,7 @@ function renderAssetBlock(semester, course, files) {
     '',
     `共 ${files.length} 个文件。`,
     '',
-    `<MaterialList :files='${attr}' />`,
+    `<MaterialList :files='${esc(JSON.stringify(items))}'${folderAttr} />`,
     '',
     MARK_END
   ].join('\n')
@@ -134,6 +154,9 @@ function syncCourseAssets(semester, course) {
   fs.mkdirSync(assetDir, { recursive: true })
 
   const files = listFiles(assetDir).sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
+  // 子文件夹 = 资料栏目（作业 / 笔记 / 真题……）。
+  // 空的也带上，这样先把栏目建好、之后再往里放文件，栏目不会消失。
+  const folders = sortFolders(listDirs(assetDir))
   const dir = path.join(COURSE_ROOT, semester, course)
   const indexFile = path.join(dir, 'index.md')
 
@@ -146,7 +169,7 @@ function syncCourseAssets(semester, course) {
 
   if (fs.existsSync(indexFile)) {
     const raw = fs.readFileSync(indexFile, 'utf-8')
-    const block = files.length ? renderAssetBlock(semester, course, files) : ''
+    const block = files.length || folders.length ? renderAssetBlock(semester, course, files, folders) : ''
     const s = raw.indexOf(MARK_START)
     const e = raw.indexOf(MARK_END)
     let next
@@ -171,7 +194,9 @@ function syncCourseAssets(semester, course) {
       fs.writeFileSync(indexFile, next, 'utf-8')
       console.log(
         block
-          ? `  ✓ 资料列表已并入课程页：${semester}/${course}/index.md（${files.length} 个文件）`
+          ? `  ✓ 资料列表已并入课程页：${semester}/${course}/index.md（${files.length} 个文件` +
+              (folders.length ? `，${folders.length} 个栏目：${folders.join('、')}` : '') +
+              '）'
           : `  - 无资料，移除课程页里的资料列表：${semester}/${course}/index.md`
       )
     }
