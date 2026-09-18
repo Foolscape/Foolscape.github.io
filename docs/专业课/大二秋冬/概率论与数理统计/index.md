@@ -58,3 +58,13 @@
   设 $X_1,\dots,X_n \sim N(\mu,\sigma^2)$ 独立，则 $\dfrac{(n-1)S^2}{\sigma^2} \sim \chi^2(n-1)$，$\dfrac{\bar{X}-\mu}{S/\sqrt{n}} \sim t(n-1)$
 
 - **矩估计 vs 极大似然估计**：极大似然要写似然函数并取对数求导，别漏了参数空间边界
+
+<!-- 资料列表：开始（自动生成，勿手改这一段） -->
+
+## 资料文件
+
+共 1 个文件。
+
+<MaterialList :files='[{"name":"概统HW01.pdf","url":"/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%BA%8C%E7%A7%8B%E5%86%AC/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/%E6%A6%82%E7%BB%9FHW01.pdf","type":"PDF","size":"1.25 MB"}]' />
+
+<!-- 资料列表：结束 -->

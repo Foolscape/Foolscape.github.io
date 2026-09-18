@@ -23,7 +23,7 @@ hero:
   <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">个学期</span></div>
   <div class="home-stat"><span class="home-stat__num">6</span><span class="home-stat__label">门课程</span></div>
   <div class="home-stat"><span class="home-stat__num">1</span><span class="home-stat__label">篇章节笔记</span></div>
-  <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">份资料</span></div>
+  <div class="home-stat"><span class="home-stat__num">4</span><span class="home-stat__label">份资料</span></div>
   </div>
   <h2 class="home-h2">大一春夏</h2>
   <div class="course-list">
@@ -48,7 +48,7 @@ hero:
   </a>
   <a class="course-row" href="/专业课/大二秋冬/电路与电子技术I/">
     <span class="course-row__name">⚡ 电路与电子技术I</span>
-    <span class="course-row__meta">还没开始记</span>
+    <span class="course-row__meta">1 份资料</span>
     <span class="course-row__arrow" aria-hidden="true">›</span>
   </a>
   <a class="course-row" href="/专业课/大二秋冬/复变函数与积分变换/">
@@ -58,7 +58,7 @@ hero:
   </a>
   <a class="course-row" href="/专业课/大二秋冬/概率论与数理统计/">
     <span class="course-row__name">🎲 概率论与数理统计</span>
-    <span class="course-row__meta">还没开始记</span>
+    <span class="course-row__meta">1 份资料</span>
     <span class="course-row__arrow" aria-hidden="true">›</span>
   </a>
   </div>
