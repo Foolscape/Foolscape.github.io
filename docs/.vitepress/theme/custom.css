@@ -324,6 +324,30 @@ html.has-aplayer-fixed .VPFooter {
   z-index: 35;
 }
 
+/*
+ * 歌名被裁的问题：APlayer 给 .aplayer-music 定死 height:20px，
+ * 一旦行高被外部样式影响，字母上沿就会被 overflow:hidden 切掉。
+ * 这里把行高显式钉死，并让高度自适应。
+ */
+.aplayer .aplayer-info .aplayer-music {
+  height: auto;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+.aplayer .aplayer-info .aplayer-music .aplayer-title,
+.aplayer .aplayer-info .aplayer-music .aplayer-author {
+  display: inline;
+  line-height: 20px;
+  vertical-align: baseline;
+}
+
+/* 封面：让它填满左侧方块，别出现白边 */
+.aplayer .aplayer-pic {
+  background-size: cover;
+  background-position: center;
+}
+
 @media print {
   .aplayer,
   .aplayer-fixed {

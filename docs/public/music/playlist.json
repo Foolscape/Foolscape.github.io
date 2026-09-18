@@ -4,7 +4,8 @@
     {
       "name": "Passionfruit",
       "artist": "Drake",
-      "url": "/music/Drake%20-%20Passionfruit.mp3"
+      "url": "/music/Drake%20-%20Passionfruit.mp3",
+      "pic": "/music/covers/default.svg"
     }
   ]
 }

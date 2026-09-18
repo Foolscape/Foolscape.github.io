@@ -216,16 +216,105 @@ function syncCourseAssets(semester, course) {
 
 /** 能当音乐放的扩展名 */
 const AUDIO_EXT = ['.mp3', '.m4a', '.aac', '.wav', '.ogg', '.oga', '.flac', '.opus']
+/** 能当封面用的图片扩展名 */
+const IMAGE_EXT = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']
+
+/**
+ * 从 MP3 的 ID3v2 标签里提取内嵌封面（APIC 帧）。
+ * 很多音乐平台下载的 mp3 都带封面，能直接抽出来用。找不到返回 null。
+ */
+function extractId3Cover(buf) {
+  if (buf.length < 10 || buf.toString('latin1', 0, 3) !== 'ID3') return null
+  const major = buf[3]
+  if (major < 3 || major > 4) return null // v2.2 的帧结构不一样，不处理
+
+  const tagSize =
+    ((buf[6] & 0x7f) << 21) | ((buf[7] & 0x7f) << 14) | ((buf[8] & 0x7f) << 7) | (buf[9] & 0x7f)
+  const end = Math.min(10 + tagSize, buf.length)
+  let pos = 10
+
+  while (pos + 10 <= end) {
+    const id = buf.toString('latin1', pos, pos + 4)
+    if (!/^[A-Z0-9]{4}$/.test(id)) break
+
+    const frameSize =
+      major >= 4
+        ? ((buf[pos + 4] & 0x7f) << 21) |
+          ((buf[pos + 5] & 0x7f) << 14) |
+          ((buf[pos + 6] & 0x7f) << 7) |
+          (buf[pos + 7] & 0x7f)
+        : buf.readUInt32BE(pos + 4)
+
+    if (frameSize <= 0 || pos + 10 + frameSize > end) break
+
+    if (id === 'APIC') {
+      const data = buf.subarray(pos + 10, pos + 10 + frameSize)
+      const enc = data[0]
+      let p = 1
+      while (p < data.length && data[p] !== 0) p++ // MIME
+      const mime = data.toString('latin1', 1, p)
+      p += 1 // MIME 结尾的 0
+      p += 1 // 图片类型字节
+      // 描述字段：UTF-16 用双字节 0 结尾，其余用单字节
+      if (enc === 1 || enc === 2) {
+        while (p + 1 < data.length && !(data[p] === 0 && data[p + 1] === 0)) p += 2
+        p += 2
+      } else {
+        while (p < data.length && data[p] !== 0) p++
+        p += 1
+      }
+      if (p < data.length - 4) {
+        return { mime, data: data.subarray(p) }
+      }
+    }
+    pos += 10 + frameSize
+  }
+  return null
+}
+
+/** 给一首歌找封面：同名图片 > mp3 内嵌封面 > 默认封面 */
+function resolveCover(file, base, coverDir) {
+  // 1) 音乐文件夹里放一张同名图片（最省事）
+  for (const ext of IMAGE_EXT) {
+    if (fs.existsSync(path.join(MUSIC_ROOT, base + ext))) {
+      return `/music/${encodeURIComponent(base)}${ext}`
+    }
+  }
+
+  if (path.extname(file).toLowerCase() !== '.mp3') return DEFAULT_COVER
+
+  // 2) 从 mp3 里抽内嵌封面
+  try {
+    const cover = extractId3Cover(fs.readFileSync(path.join(MUSIC_ROOT, file)))
+    if (cover) {
+      const ext = cover.mime.includes('png') ? '.png' : cover.mime.includes('webp') ? '.webp' : '.jpg'
+      const name = `${base}${ext}`
+      const target = path.join(coverDir, name)
+      // 内容没变就不重写，免得每次构建都产生 diff
+      const old = fs.existsSync(target) ? fs.readFileSync(target) : null
+      if (!old || !old.equals(cover.data)) fs.writeFileSync(target, cover.data)
+      console.log(`  ✓ 抽出内嵌封面：${base}${ext}（${Math.round(cover.data.length / 1024)} KB）`)
+      return `/music/covers/${encodeURIComponent(name)}`
+    }
+  } catch {
+    // 抽不出来就用默认封面，不影响构建
+  }
+
+  return DEFAULT_COVER
+}
+
+const DEFAULT_COVER = '/music/covers/default.svg'
 
 /**
  * 扫描 docs/public/music/，生成 APlayer 用的歌单 playlist.json。
  *
- * 文件名写成「艺术家 - 标题.mp3」会自动拆成歌手和曲名，比如
- *   Drake - Passionfruit.mp3  →  歌手 Drake，曲名 Passionfruit
- * 只写标题也行，歌手留空。
+ * 文件名写成「艺术家 - 标题.mp3」会自动拆成歌手和曲名。
+ * 封面按「同名图片 → mp3 内嵌封面 → 默认封面」的顺序找。
  */
 function writeMusicPlaylist() {
   fs.mkdirSync(MUSIC_ROOT, { recursive: true })
+  const coverDir = path.join(MUSIC_ROOT, 'covers')
+  fs.mkdirSync(coverDir, { recursive: true })
 
   const files = fs
     .readdirSync(MUSIC_ROOT)
@@ -238,7 +327,8 @@ function writeMusicPlaylist() {
     return {
       name: parts.length > 1 ? parts.slice(1).join(' - ') : base,
       artist: parts.length > 1 ? parts[0] : '',
-      url: encodeURI(`/music/${file}`)
+      url: encodeURI(`/music/${file}`),
+      pic: resolveCover(file, base, coverDir)
     }
   })
 
