@@ -355,6 +355,88 @@ html.has-aplayer-fixed .VPFooter {
   }
 }
 
+/* ---------------- 首页看板 ---------------- */
+
+.home-dash {
+  margin-top: 8px;
+}
+
+/* 数据统计：一行大数字 */
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 12px;
+  margin: 0 0 44px;
+}
+
+.home-stat {
+  padding: 18px 12px 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  background: var(--vp-c-bg-soft);
+  text-align: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--vp-c-brand-2);
+}
+
+.home-stat__num {
+  display: block;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(120deg, #b45309 10%, #f59e0b 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .home-stat__num {
+  background: linear-gradient(120deg, #fcd34d 10%, #fb923c 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.home-stat__label {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+/* 学期小标题：覆盖正文 h2 的分隔线样式 */
+.vp-doc .home-h2 {
+  margin: 36px 0 14px;
+  padding: 0;
+  border: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-text-3);
+}
+
+.vp-doc .home-h2:first-child {
+  margin-top: 0;
+}
+
+/* 首页的课程卡片比专业课页再高一点，视觉上更“可点” */
+.home-dash .course-card {
+  padding: 16px 18px;
+}
+
+.home-dash .course-card__name {
+  font-size: 16px;
+}
+
+/* 首页的最近更新，上方留点空 */
+.home-dash .log-timeline {
+  margin-top: 0;
+}
+
 /* ---------------- 学习日志时间线 ---------------- */
 
 .log-timeline {

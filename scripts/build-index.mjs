@@ -494,6 +494,20 @@ function syncCourseCards(bySemester) {
   }
 }
 
+/** 学期排序：大二秋冬 → 大二春夏 → 大三秋冬……跟 config.mts 里的规则保持一致 */
+const GRADE_NUM = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5 }
+function semesterKey(name) {
+  const grade = name.match(/大([一二三四五])/)?.[1]
+  if (!grade) return `9${name}`
+  const term = name.includes('秋冬') ? 1 : name.includes('春夏') ? 2 : 3
+  return `${GRADE_NUM[grade]}${term}`
+}
+function sortSemesters(list) {
+  return [...list].sort(
+    (a, b) => semesterKey(a).localeCompare(semesterKey(b)) || a.localeCompare(b, 'zh-CN')
+  )
+}
+
 /** 读标题：优先 frontmatter 的 title，其次第一个 # 标题，最后用文件名 */
 function readDocTitle(file) {
   try {
@@ -583,33 +597,49 @@ function writeLogTimeline() {
   }
 }
 
-// ---------- 首页「最近更新」 ----------
+// ---------- 首页看板 ----------
 
-const RECENT_START = '<!-- 最近更新：开始（自动生成，勿手改这一段） -->'
-const RECENT_END = '<!-- 最近更新：结束 -->'
+const HOME_START = '<!-- 首页看板：开始（自动生成，勿手改这一段） -->'
+const HOME_END = '<!-- 首页看板：结束 -->'
+
+/** 首页卡片上的课程图标。跟 config.mts 里的 COURSE_ICONS 保持一致 */
+const HOME_ICONS = [
+  [/实验/, '🔬'],
+  [/电路|电子/, '⚡'],
+  [/概率|统计/, '🎲'],
+  [/物理/, '🔭'],
+  [/复变|积分变换/, '🌀'],
+  [/微分方程/, '📈'],
+  [/数学|几何/, '📐'],
+  [/程序|数据结构|算法|计算机/, '💻'],
+  [/英语/, '🔤']
+]
+
+function homeIcon(name) {
+  for (const [re, icon] of HOME_ICONS) if (re.test(name)) return icon
+  return '📘'
+}
 
 /**
- * 从 git 历史里挑出最近改动过的**笔记文件**，生成首页的「最近更新」。
- *
- * 只看 docs/专业课/ 和 docs/学习日志/ 下的 .md，并跳过 index.md / 资料下载.md ——
- * 否则首页会冒出「修复 APlayer 封面」这类对读者毫无意义的改动。
+ * 从 git 历史里挑出最近改动过的**笔记文件**（只列仍然存在的，
+ * 否则 git 里已删除的课程会变成死链、让构建失败）。
  *
  * 注：git 的输出用**文件描述符**接收而不是管道，因为某些受限环境禁止创建管道。
  */
-function writeRecentUpdates() {
+function collectRecentNotes(limit = 5) {
   const tmp = path.join(ROOT, '.git-log.tmp')
   let raw = ''
   try {
     const fd = fs.openSync(tmp, 'w')
     execFileSync(
       'git',
-      ['log', '-40', '--name-only', '--date=format:%Y-%m-%d', '--pretty=format:@@%ad', '--', 'docs'],
+      ['log', '-40', '--name-only', '--date=format:%m-%d', '--pretty=format:@@%ad', '--', 'docs'],
       { cwd: ROOT, stdio: ['ignore', fd, 'ignore'] }
     )
     fs.closeSync(fd)
     raw = fs.readFileSync(tmp, 'utf-8')
   } catch {
-    return // 拿不到 git 历史（比如不是 git 仓库）就跳过，不影响构建
+    return []
   } finally {
     try {
       fs.unlinkSync(tmp)
@@ -628,43 +658,110 @@ function writeRecentUpdates() {
     for (const f of files) {
       const file = f.trim()
       if (!file.endsWith('.md')) continue
-
-      // 只认「用户真正写过的内容」：
-      //   docs/专业课/<学期>/<课程>/xxx.md  —— 课程页与章节笔记
-      //   docs/学习日志/<日期>-xxx.md
-      // 自动生成的页面（专业课首页、学期总览、日志首页、资料下载）一律跳过，
-      // 否则每次构建都会因为它们变化而刷屏。
       const parts = file.replace(/^docs\//, '').split('/')
       const base = path.basename(file, '.md')
       const isCourseContent = parts[0] === '专业课' && parts.length >= 4
       const isLog = parts[0] === '学习日志' && parts.length === 2 && base !== 'index'
       if (!isCourseContent && !isLog) continue
-
-      // 历史上删掉的文件不能再出现，否则会生成死链、构建直接失败
       if (!fs.existsSync(path.join(ROOT, file))) continue
       if (seen.has(file)) continue
       seen.add(file)
 
-      const href =
-        base === 'index'
-          ? `/${parts.slice(0, -1).join('/')}/`
-          : `/${file.replace(/^docs\//, '').replace(/\.md$/, '')}`
-      items.push(`- **${date}** [${readDocTitle(path.join(ROOT, file))}](${href})`)
-      if (items.length >= 6) break
+      items.push({
+        date,
+        title: readDocTitle(path.join(ROOT, file)),
+        href:
+          base === 'index'
+            ? `/${parts.slice(0, -1).join('/')}/`
+            : `/${file.replace(/^docs\//, '').replace(/\.md$/, '')}`
+      })
+      if (items.length >= limit) return items
     }
-    if (items.length >= 6) break
   }
+  return items
+}
 
-  const block = items.length ? [RECENT_START, '', '## 最近更新', '', ...items, '', RECENT_END].join('\n') : ''
+/**
+ * 生成首页看板：数据统计 + 按学期分组的课程卡片 + 最近更新。
+ * 首页不放解释性文字 —— 那些属于 关于我 和 README。
+ */
+function writeHomeDashboard(bySemester) {
+  let courseCount = 0
+  let noteCount = 0
+  let assetCount = 0
+
+  const sections = bySemester.map(([semester, courses]) => {
+    courseCount += courses.length
+    const cards = courses.map((course) => {
+      const dir = path.join(COURSE_ROOT, semester, course)
+      const notes = fs.existsSync(dir)
+        ? fs
+            .readdirSync(dir)
+            .filter((f) => f.endsWith('.md') && f !== 'index.md' && !f.startsWith('资料下载')).length
+        : 0
+      const assets = listFiles(path.join(ASSET_ROOT, semester, course)).length
+      noteCount += notes
+      assetCount += assets
+
+      const meta = []
+      if (notes) meta.push(`${notes} 篇笔记`)
+      if (assets) meta.push(`${assets} 份资料`)
+
+      return (
+        `    <a class="course-card" href="/专业课/${semester}/${course}/">\n` +
+        `      <span class="course-card__term">${escHtml(semester)}</span>\n` +
+        `      <span class="course-card__name">${homeIcon(course)} ${escHtml(course)}</span>\n` +
+        `      <span class="course-card__meta">${meta.join(' · ') || '还没开始记'}</span>\n` +
+        `    </a>`
+      )
+    })
+
+    return (
+      `  <h2 class="home-h2">${escHtml(semester)}</h2>\n` +
+      `  <div class="course-grid">\n${cards.join('\n')}\n  </div>`
+    )
+  })
+
+  const recent = collectRecentNotes(5)
+  const recentHtml = recent.length
+    ? `  <h2 class="home-h2">最近更新</h2>\n  <div class="log-timeline">\n` +
+      recent
+        .map(
+          (r) =>
+            `    <a class="log-item" href="${r.href}"><span class="log-item__date">${r.date}</span><span class="log-item__title">${escHtml(r.title)}</span></a>`
+        )
+        .join('\n') +
+      `\n  </div>`
+    : ''
+
+  const stat = (num, label) =>
+    `  <div class="home-stat"><span class="home-stat__num">${num}</span><span class="home-stat__label">${label}</span></div>`
+
+  const block = [
+    HOME_START,
+    '',
+    '<div class="home-dash">',
+    '  <div class="home-stats">',
+    stat(bySemester.length, '个学期'),
+    stat(courseCount, '门课程'),
+    stat(noteCount, '篇章节笔记'),
+    stat(assetCount, '份资料'),
+    '  </div>',
+    '',
+    sections.join('\n\n'),
+    recentHtml ? `\n${recentHtml}` : '',
+    '</div>',
+    '',
+    HOME_END
+  ]
+    .filter((s) => s !== '')
+    .join('\n')
 
   const target = path.join(DOCS, 'index.md')
-  const insertAfterFrontmatter = (raw2) => {
-    const fm = raw2.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/)
-    return fm ? fm[0].length : 0
-  }
-
-  if (writeBlockInto(target, RECENT_START, RECENT_END, block, insertAfterFrontmatter)) {
-    console.log(`  ✓ 首页最近更新：docs/index.md（${items.length} 条）`)
+  if (writeBlockInto(target, HOME_START, HOME_END, block)) {
+    console.log(
+      `  ✓ 首页看板：${bySemester.length} 个学期 / ${courseCount} 门课 / ${noteCount} 篇笔记 / ${assetCount} 份资料，最近更新 ${recent.length} 条`
+    )
   }
 }
 
@@ -672,9 +769,7 @@ function main() {
   fs.mkdirSync(COURSE_ROOT, { recursive: true })
   fs.mkdirSync(ASSET_ROOT, { recursive: true })
 
-  const semesters = [...new Set([...listDirs(COURSE_ROOT), ...listDirs(ASSET_ROOT)])].sort((a, b) =>
-    a.localeCompare(b, 'zh-CN', { numeric: true })
-  )
+  const semesters = sortSemesters([...new Set([...listDirs(COURSE_ROOT), ...listDirs(ASSET_ROOT)])])
 
   if (semesters.length === 0) {
     console.log('[build-index] 还没有任何学期。在 docs/专业课/ 下新建「大二秋冬」这样的文件夹即可。')
@@ -710,7 +805,7 @@ function main() {
 
   syncCourseCards(bySemester)
   writeLogTimeline()
-  writeRecentUpdates()
+  writeHomeDashboard(bySemester)
   writeMusicPlaylist()
   console.log('[build-index] 完成。')
 }

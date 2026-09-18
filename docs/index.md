@@ -4,7 +4,7 @@ layout: home
 hero:
   name: 峻熹的学习笔记
   text: 浙江大学 · 大二在读
-  tagline: 按学期与专业课归档的 Markdown 笔记与 PDF 资料 —— 学到哪，记到哪。
+  tagline: 学到哪，记到哪。
   actions:
     - theme: brand
       text: 开始阅读
@@ -15,39 +15,61 @@ hero:
     - theme: alt
       text: GitHub
       link: https://github.com/Foolscape
-
-features:
-  - title: 按学期与课程归档
-    details: 一个学期一个分组，一门课一个文件夹。笔记写 Markdown，扫描件、课件放 PDF，自动归位。
-  - title: 目录自动生成
-    details: 新增笔记或资料不用改任何配置，侧边栏和课程页里的资料列表会自动长出来。
-  - title: 全文搜索
-    details: 内置本地搜索，期末复习时一句话就能把整学期笔记翻出来。
-  - title: 版本可追溯
-    details: 每次提交都是一次存档，能看到自己每一周的进步轨迹。
 ---
 
-<!-- 最近更新：开始（自动生成，勿手改这一段） -->
+<!-- 首页看板：开始（自动生成，勿手改这一段） -->
+<div class="home-dash">
+  <div class="home-stats">
+  <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">个学期</span></div>
+  <div class="home-stat"><span class="home-stat__num">6</span><span class="home-stat__label">门课程</span></div>
+  <div class="home-stat"><span class="home-stat__num">1</span><span class="home-stat__label">篇章节笔记</span></div>
+  <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">份资料</span></div>
+  </div>
+  <h2 class="home-h2">大一春夏</h2>
+  <div class="course-grid">
+    <a class="course-card" href="/专业课/大一春夏/常微分方程/">
+      <span class="course-card__term">大一春夏</span>
+      <span class="course-card__name">📈 常微分方程</span>
+      <span class="course-card__meta">1 份资料</span>
+    </a>
+  </div>
 
-## 最近更新
+  <h2 class="home-h2">大二秋冬</h2>
+  <div class="course-grid">
+    <a class="course-card" href="/专业课/大二秋冬/大学物理甲II/">
+      <span class="course-card__term">大二秋冬</span>
+      <span class="course-card__name">🔭 大学物理甲II</span>
+      <span class="course-card__meta">还没开始记</span>
+    </a>
+    <a class="course-card" href="/专业课/大二秋冬/电路与电子技术实验I/">
+      <span class="course-card__term">大二秋冬</span>
+      <span class="course-card__name">🔬 电路与电子技术实验I</span>
+      <span class="course-card__meta">1 篇笔记</span>
+    </a>
+    <a class="course-card" href="/专业课/大二秋冬/电路与电子技术I/">
+      <span class="course-card__term">大二秋冬</span>
+      <span class="course-card__name">⚡ 电路与电子技术I</span>
+      <span class="course-card__meta">还没开始记</span>
+    </a>
+    <a class="course-card" href="/专业课/大二秋冬/复变函数与积分变换/">
+      <span class="course-card__term">大二秋冬</span>
+      <span class="course-card__name">🌀 复变函数与积分变换</span>
+      <span class="course-card__meta">1 份资料</span>
+    </a>
+    <a class="course-card" href="/专业课/大二秋冬/概率论与数理统计/">
+      <span class="course-card__term">大二秋冬</span>
+      <span class="course-card__name">🎲 概率论与数理统计</span>
+      <span class="course-card__meta">还没开始记</span>
+    </a>
+  </div>
 
-- **2026-09-18** [复变函数与积分变换](/专业课/大二秋冬/复变函数与积分变换/)
-- **2026-09-18** [常微分方程](/专业课/大一春夏/常微分方程/)
-- **2026-09-18** [大学物理甲II](/专业课/大二秋冬/大学物理甲II/)
-- **2026-09-18** [概率论与数理统计](/专业课/大二秋冬/概率论与数理统计/)
-- **2026-09-18** [电路与电子技术I](/专业课/大二秋冬/电路与电子技术I/)
-- **2026-09-17** [电路与电子技术实验I](/专业课/大二秋冬/电路与电子技术实验I/)
-
-<!-- 最近更新：结束 -->
-
-## 这个站是什么
-
-记录我在大学的学习过程：课堂笔记、复习提纲、手写扫描件、课件与真题。
-
-站点由 [VitePress](https://vitepress.dev/) 生成，源码托管在 [GitHub](https://github.com/Foolscape/Foolscape.github.io)，推送到 `main` 分支后自动构建发布。笔记全部是纯文本 Markdown，不绑定任何平台，随时可以搬走。
-
-## 怎么找内容
-
-- **[专业课](/专业课/)** —— 按学期与课程分类的笔记与资料
-- **[学习日志](/学习日志/)** —— 按时间记录的学习过程与复盘
-- **[关于我](/关于我)** —— 联系方式与这个站的来由
+  <h2 class="home-h2">最近更新</h2>
+  <div class="log-timeline">
+    <a class="log-item" href="/专业课/大二秋冬/复变函数与积分变换/"><span class="log-item__date">09-18</span><span class="log-item__title">复变函数与积分变换</span></a>
+    <a class="log-item" href="/专业课/大一春夏/常微分方程/"><span class="log-item__date">09-18</span><span class="log-item__title">常微分方程</span></a>
+    <a class="log-item" href="/专业课/大二秋冬/大学物理甲II/"><span class="log-item__date">09-18</span><span class="log-item__title">大学物理甲II</span></a>
+    <a class="log-item" href="/专业课/大二秋冬/概率论与数理统计/"><span class="log-item__date">09-18</span><span class="log-item__title">概率论与数理统计</span></a>
+    <a class="log-item" href="/专业课/大二秋冬/电路与电子技术I/"><span class="log-item__date">09-18</span><span class="log-item__title">电路与电子技术I</span></a>
+  </div>
+</div>
+<!-- 首页看板：结束 -->

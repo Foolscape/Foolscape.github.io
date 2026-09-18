@@ -5,6 +5,11 @@
 <!-- 课程卡片：开始（自动生成，勿手改这一段） -->
 
 <div class="course-grid">
+  <a class="course-card" href="/专业课/大一春夏/常微分方程/">
+    <span class="course-card__term">大一春夏</span>
+    <span class="course-card__name">常微分方程</span>
+    <span class="course-card__meta">1 份资料</span>
+  </a>
   <a class="course-card" href="/专业课/大二秋冬/大学物理甲II/">
     <span class="course-card__term">大二秋冬</span>
     <span class="course-card__name">大学物理甲II</span>
@@ -29,11 +34,6 @@
     <span class="course-card__term">大二秋冬</span>
     <span class="course-card__name">概率论与数理统计</span>
     <span class="course-card__meta">暂无资料</span>
-  </a>
-  <a class="course-card" href="/专业课/大一春夏/常微分方程/">
-    <span class="course-card__term">大一春夏</span>
-    <span class="course-card__name">常微分方程</span>
-    <span class="course-card__meta">1 份资料</span>
   </a>
 </div>
 
