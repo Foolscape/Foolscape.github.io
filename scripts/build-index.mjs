@@ -251,14 +251,14 @@ function syncProgress(semester, course) {
   let next
 
   if (s !== -1 && e > s) {
-    const before = raw.slice(0, s)
-    const after = raw.slice(e + PROG_END.length)
+    // 原地替换，两侧都规整成「恰好一个空行」。
+    // 手工编辑后很容易出现「结束标记紧贴着下面的引用块」，markdown 会把它并进 HTML 块里。
+    const before = raw.slice(0, s).replace(/\s+$/, '')
+    const after = raw.slice(e + PROG_END.length).replace(/^\s+/, '')
     if (block) {
-      next = `${before}${block}${after}`
+      next = `${before}\n\n${block}${after ? `\n\n${after}` : '\n'}`
     } else {
-      const b = before.replace(/\s+$/, '')
-      const a = after.replace(/^\s+/, '')
-      next = a ? `${b}\n\n${a}` : `${b}\n`
+      next = after ? `${before}\n\n${after}` : `${before}\n`
     }
   } else if (block) {
     // 首次出现：优先插在「## 章节规划」标题正下方

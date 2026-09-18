@@ -23,7 +23,7 @@
   <a class="course-card" href="/专业课/大二秋冬/复变函数与积分变换/">
     <span class="course-card__term">大二秋冬</span>
     <span class="course-card__name">复变函数与积分变换</span>
-    <span class="course-card__meta">暂无资料</span>
+    <span class="course-card__meta">1 份资料</span>
   </a>
   <a class="course-card" href="/专业课/大二秋冬/概率论与数理统计/">
     <span class="course-card__term">大二秋冬</span>
