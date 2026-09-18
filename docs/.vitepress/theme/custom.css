@@ -807,6 +807,69 @@ html.has-aplayer-fixed .VPFooter {
   color: var(--vp-c-text-1);
 }
 
+/* ---------------- 鼠标点击动效 ---------------- */
+
+.click-fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  /* 纯装饰层，绝不能拦到点击 */
+  pointer-events: none;
+}
+
+.click-fx {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border: 2px solid var(--vp-c-brand-3);
+  border-radius: 50%;
+  transform: scale(0.25);
+  opacity: 0.9;
+  animation: click-ring 0.62s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes click-ring {
+  from {
+    transform: scale(0.25);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.click-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--vp-c-brand-3);
+  animation: click-spark 0.56s ease-out forwards;
+}
+
+@keyframes click-spark {
+  from {
+    transform: rotate(var(--a)) translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateY(-30px) scale(0.15);
+    opacity: 0;
+  }
+}
+
+@media print {
+  .click-fx-layer {
+    display: none !important;
+  }
+}
+
 /* ---------------- 打印样式：只留正文 ---------------- */
 
 @media print {

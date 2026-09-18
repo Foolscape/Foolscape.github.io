@@ -4,6 +4,7 @@ import PdfViewer from './components/PdfViewer.vue'
 import MaterialList from './components/MaterialList.vue'
 import APlayerBg from './components/APlayerBg.vue'
 import HomeFx from './components/HomeFx.vue'
+import ClickFx from './components/ClickFx.vue'
 import './custom.css'
 
 export default {
@@ -13,7 +14,7 @@ export default {
     return h(DefaultTheme.Layout, null, {
       // 音乐播放器挂 layout-bottom：全站每个页面都在，SPA 切页时组件不被销毁，
       // 所以音乐能跨页面连续播放不中断
-      'layout-bottom': () => h(APlayerBg)
+      'layout-bottom': () => [h(APlayerBg), h(ClickFx)]
     })
   },
 
