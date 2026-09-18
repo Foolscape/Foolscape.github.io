@@ -1,6 +1,7 @@
 import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import PdfViewer from './components/PdfViewer.vue'
+import MaterialList from './components/MaterialList.vue'
 import BgmPlayer from './components/BgmPlayer.vue'
 import './custom.css'
 
@@ -16,7 +17,10 @@ export default {
   },
 
   enhanceApp({ app }) {
-    // 全局注册，任意 .md 里都能直接写 <PdfViewer src="..." />
+    // 全局注册，任意 .md 里都能直接用
+    // <PdfViewer src="..." />      —— 嵌单个 PDF（适合放进章节笔记里）
+    // <MaterialList :files='...' /> —— 资料列表 + 共享预览区（课程页自动生成）
     app.component('PdfViewer', PdfViewer)
+    app.component('MaterialList', MaterialList)
   }
 }

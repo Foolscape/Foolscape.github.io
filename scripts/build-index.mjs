@@ -90,42 +90,37 @@ function escAttr(s) {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 }
 
-/** 渲染资料列表区块：概览表格 + 每个 PDF 一个内嵌预览 */
+/**
+ * 渲染资料列表区块：一张紧凑列表 + 单一共享预览区
+ * （组件在 theme/components/MaterialList.vue）
+ *
+ * 以前是「每个 PDF 一个预览条」，一学期攒下十几份作业就会堆出十几个一样的方框。
+ * 改成列表 + 共享预览区之后，无论多少文件，预览区永远只有一个。
+ */
 function renderAssetBlock(semester, course, files) {
   const assetDir = path.join(ASSET_ROOT, semester, course)
 
-  const rows = files
-    .map((rel) => {
-      const size = fs.statSync(path.join(assetDir, rel)).size
-      const url = encodeURI(`/资料/${semester}/${course}/${rel}`)
-      const label = rel.replace(/\//g, ' / ')
-      return `| [${label}](${url}) | ${fileKind(rel)} | ${humanSize(size)} |`
-    })
-    .join('\n')
+  const items = files.map((rel) => ({
+    name: rel.replace(/\//g, ' / '),
+    url: encodeURI(`/资料/${semester}/${course}/${rel}`),
+    type: fileKind(rel),
+    size: humanSize(fs.statSync(path.join(assetDir, rel)).size)
+  }))
 
-  // 每个 PDF 生成一个可折叠的内嵌阅读器（组件在 theme/components/PdfViewer.vue）
-  const viewers = files
-    .filter((rel) => rel.toLowerCase().endsWith('.pdf'))
-    .map((rel) => {
-      const url = encodeURI(`/资料/${semester}/${course}/${rel}`)
-      return `<PdfViewer src="${url}" title="${escAttr(rel.split('/').pop() || rel)}" />`
-    })
-    .join('\n\n')
+  // 属性用单引号包，所以只需转义 & 和 '（组件里会被解码回合法 JSON）
+  const attr = JSON.stringify(items).replace(/&/g, '&amp;').replace(/'/g, '&#39;')
 
-  const block = [
+  return [
     MARK_START,
     '',
     '## 资料文件',
     '',
     `共 ${files.length} 个文件。`,
     '',
-    '| 文件 | 类型 | 大小 |',
-    '| --- | --- | --- |',
-    rows
-  ]
-  if (viewers) block.push('', viewers)
-  block.push('', MARK_END)
-  return block.join('\n')
+    `<MaterialList :files='${attr}' />`,
+    '',
+    MARK_END
+  ].join('\n')
 }
 
 /**

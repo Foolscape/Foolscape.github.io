@@ -42,10 +42,6 @@
 
 共 1 个文件。
 
-| 文件 | 类型 | 大小 |
-| --- | --- | --- |
-| [HW01.pdf](/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%BA%8C%E7%A7%8B%E5%86%AC/%E5%A4%8D%E5%8F%98%E5%87%BD%E6%95%B0%E4%B8%8E%E7%A7%AF%E5%88%86%E5%8F%98%E6%8D%A2/HW01.pdf) | PDF | 2.40 MB |
-
-<PdfViewer src="/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%BA%8C%E7%A7%8B%E5%86%AC/%E5%A4%8D%E5%8F%98%E5%87%BD%E6%95%B0%E4%B8%8E%E7%A7%AF%E5%88%86%E5%8F%98%E6%8D%A2/HW01.pdf" title="HW01.pdf" />
+<MaterialList :files='[{"name":"HW01.pdf","url":"/%E8%B5%84%E6%96%99/%E5%A4%A7%E4%BA%8C%E7%A7%8B%E5%86%AC/%E5%A4%8D%E5%8F%98%E5%87%BD%E6%95%B0%E4%B8%8E%E7%A7%AF%E5%88%86%E5%8F%98%E6%8D%A2/HW01.pdf","type":"PDF","size":"2.40 MB"}]' />
 
 <!-- 资料列表：结束 -->
