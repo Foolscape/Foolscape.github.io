@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="峻熹的学习笔记">
   <defs>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="c1" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#fbbf24"/>
       <stop offset="1" stop-color="#c2410c"/>
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="12" fill="url(#brand)"/>
+  <rect width="48" height="48" rx="12" fill="url(#c1)"/>
   <path d="M31.5 11.5 V29.5 C31.5 35 28 38.5 23.6 38.5 C19.6 38.5 16.6 36.2 15.2 32.6"
         fill="none" stroke="#fff" stroke-width="5.6" stroke-linecap="round"/>
 </svg>
