@@ -15,6 +15,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 
 const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const DOCS = path.join(ROOT, 'docs')
@@ -493,6 +494,180 @@ function syncCourseCards(bySemester) {
   }
 }
 
+/** 读标题：优先 frontmatter 的 title，其次第一个 # 标题，最后用文件名 */
+function readDocTitle(file) {
+  try {
+    const raw = fs.readFileSync(file, 'utf-8')
+    const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)
+    if (fm) {
+      const t = fm[1].match(/^title:\s*(.+)$/m)
+      if (t) return t[1].trim().replace(/^['"]|['"]$/g, '')
+    }
+    const h = raw.match(/^#\s+(.+?)\s*$/m)
+    if (h) return h[1]
+  } catch {
+    /* 读不到就用文件名 */
+  }
+  return path.basename(file, '.md')
+}
+
+/** 通用的「把生成块写进某个文件」逻辑：有标记就原地替换，没有就插到 anchor 之后 */
+function writeBlockInto(file, startMark, endMark, block, insertAfter) {
+  if (!fs.existsSync(file)) return false
+  const raw = fs.readFileSync(file, 'utf-8')
+  const s = raw.indexOf(startMark)
+  const e = raw.indexOf(endMark)
+  let next
+
+  if (s !== -1 && e > s) {
+    const before = raw.slice(0, s).replace(/\s+$/, '')
+    const after = raw.slice(e + endMark.length).replace(/^\s+/, '')
+    next = block
+      ? `${before}\n\n${block}${after ? `\n\n${after}` : '\n'}`
+      : after
+        ? `${before}\n\n${after}`
+        : `${before}\n`
+  } else if (block) {
+    const at = insertAfter ? insertAfter(raw) : 0
+    next = `${raw.slice(0, at).replace(/\s+$/, '')}\n\n${block}\n${raw.slice(at)}`
+  } else {
+    return false
+  }
+
+  if (next !== raw) {
+    fs.writeFileSync(file, next, 'utf-8')
+    return true
+  }
+  return false
+}
+
+// ---------- 学习日志时间线 ----------
+
+const TIMELINE_START = '<!-- 日志时间线：开始（自动生成，勿手改这一段） -->'
+const TIMELINE_END = '<!-- 日志时间线：结束 -->'
+
+/** 扫描 docs/学习日志/，把日志列成一条竖向时间线 */
+function writeLogTimeline() {
+  const dir = path.join(DOCS, '学习日志')
+  const files = fs.existsSync(dir)
+    ? fs
+        .readdirSync(dir)
+        .filter((f) => /^\d{4}-\d{2}-\d{2}-.+\.md$/.test(f))
+        .sort((a, b) => b.localeCompare(a)) // 新的在前
+    : []
+
+  const items = files.map((f) => {
+    const date = f.slice(0, 10)
+    const title = escHtml(readDocTitle(path.join(dir, f)))
+    return `  <a class="log-item" href="/学习日志/${encodeURIComponent(f.replace(/\.md$/, ''))}">
+    <span class="log-item__date">${date}</span>
+    <span class="log-item__title">${title}</span>
+  </a>`
+  })
+
+  const block = [
+    TIMELINE_START,
+    '',
+    '<div class="log-timeline">',
+    items.length
+      ? items.join('\n')
+      : '  <p class="log-empty">还没有日志。在 <code>docs/学习日志/</code> 下新建 <code>YYYY-MM-DD-标题.md</code> 就会出现。</p>',
+    '</div>',
+    '',
+    TIMELINE_END
+  ].join('\n')
+
+  const target = path.join(dir, 'index.md')
+  if (writeBlockInto(target, TIMELINE_START, TIMELINE_END, block)) {
+    console.log(`  ✓ 日志时间线：docs/学习日志/index.md（${items.length} 篇）`)
+  }
+}
+
+// ---------- 首页「最近更新」 ----------
+
+const RECENT_START = '<!-- 最近更新：开始（自动生成，勿手改这一段） -->'
+const RECENT_END = '<!-- 最近更新：结束 -->'
+
+/**
+ * 从 git 历史里挑出最近改动过的**笔记文件**，生成首页的「最近更新」。
+ *
+ * 只看 docs/专业课/ 和 docs/学习日志/ 下的 .md，并跳过 index.md / 资料下载.md ——
+ * 否则首页会冒出「修复 APlayer 封面」这类对读者毫无意义的改动。
+ *
+ * 注：git 的输出用**文件描述符**接收而不是管道，因为某些受限环境禁止创建管道。
+ */
+function writeRecentUpdates() {
+  const tmp = path.join(ROOT, '.git-log.tmp')
+  let raw = ''
+  try {
+    const fd = fs.openSync(tmp, 'w')
+    execFileSync(
+      'git',
+      ['log', '-40', '--name-only', '--date=format:%Y-%m-%d', '--pretty=format:@@%ad', '--', 'docs'],
+      { cwd: ROOT, stdio: ['ignore', fd, 'ignore'] }
+    )
+    fs.closeSync(fd)
+    raw = fs.readFileSync(tmp, 'utf-8')
+  } catch {
+    return // 拿不到 git 历史（比如不是 git 仓库）就跳过，不影响构建
+  } finally {
+    try {
+      fs.unlinkSync(tmp)
+    } catch {
+      /* 清理失败无所谓 */
+    }
+  }
+
+  const seen = new Set()
+  const items = []
+  for (const block of raw.split(/^@@/m).slice(1)) {
+    const nl = block.indexOf('\n')
+    const date = (nl === -1 ? block : block.slice(0, nl)).trim()
+    const files = nl === -1 ? [] : block.slice(nl + 1).split('\n')
+
+    for (const f of files) {
+      const file = f.trim()
+      if (!file.endsWith('.md')) continue
+
+      // 只认「用户真正写过的内容」：
+      //   docs/专业课/<学期>/<课程>/xxx.md  —— 课程页与章节笔记
+      //   docs/学习日志/<日期>-xxx.md
+      // 自动生成的页面（专业课首页、学期总览、日志首页、资料下载）一律跳过，
+      // 否则每次构建都会因为它们变化而刷屏。
+      const parts = file.replace(/^docs\//, '').split('/')
+      const base = path.basename(file, '.md')
+      const isCourseContent = parts[0] === '专业课' && parts.length >= 4
+      const isLog = parts[0] === '学习日志' && parts.length === 2 && base !== 'index'
+      if (!isCourseContent && !isLog) continue
+
+      // 历史上删掉的文件不能再出现，否则会生成死链、构建直接失败
+      if (!fs.existsSync(path.join(ROOT, file))) continue
+      if (seen.has(file)) continue
+      seen.add(file)
+
+      const href =
+        base === 'index'
+          ? `/${parts.slice(0, -1).join('/')}/`
+          : `/${file.replace(/^docs\//, '').replace(/\.md$/, '')}`
+      items.push(`- **${date}** [${readDocTitle(path.join(ROOT, file))}](${href})`)
+      if (items.length >= 6) break
+    }
+    if (items.length >= 6) break
+  }
+
+  const block = items.length ? [RECENT_START, '', '## 最近更新', '', ...items, '', RECENT_END].join('\n') : ''
+
+  const target = path.join(DOCS, 'index.md')
+  const insertAfterFrontmatter = (raw2) => {
+    const fm = raw2.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/)
+    return fm ? fm[0].length : 0
+  }
+
+  if (writeBlockInto(target, RECENT_START, RECENT_END, block, insertAfterFrontmatter)) {
+    console.log(`  ✓ 首页最近更新：docs/index.md（${items.length} 条）`)
+  }
+}
+
 function main() {
   fs.mkdirSync(COURSE_ROOT, { recursive: true })
   fs.mkdirSync(ASSET_ROOT, { recursive: true })
@@ -534,6 +709,8 @@ function main() {
   }
 
   syncCourseCards(bySemester)
+  writeLogTimeline()
+  writeRecentUpdates()
   writeMusicPlaylist()
   console.log('[build-index] 完成。')
 }

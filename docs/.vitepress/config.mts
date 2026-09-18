@@ -77,12 +77,34 @@ function sortCourses(list) {
   return list.sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
 }
 
+/**
+ * 侧边栏课程图标：按关键词匹配，让目录一眼能分清科目。
+ * 想关掉就把这个数组清空。匹配顺序从上往下，所以「实验」要排在「电路」前面。
+ */
+const COURSE_ICONS = [
+  [/实验/, '🔬'],
+  [/电路|电子/, '⚡'],
+  [/概率|统计/, '🎲'],
+  [/物理/, '🔭'],
+  [/复变|积分变换/, '🌀'],
+  [/微分方程/, '📈'],
+  [/数学|几何/, '📐'],
+  [/程序|数据结构|算法|计算机/, '💻'],
+  [/英语/, '🔤']
+]
+
+function courseIcon(name) {
+  for (const [re, icon] of COURSE_ICONS) if (re.test(name)) return icon
+  return '📘'
+}
+
 /** 学期 → 课程 → 章节，两层可折叠分组 */
 function courseSidebar() {
   return sortSemesters(listDirs(COURSE_DIR)).map((semester) => ({
-    text: semester,
+    text: `🗓 ${semester}`,
     collapsed: false,
     items: sortCourses(listDirs(path.join(COURSE_DIR, semester))).map((course) => {
+      const label = `${courseIcon(course)} ${course}`
       const children = mdFiles(path.join(COURSE_DIR, semester, course))
         .filter((f) => f !== 'index.md')
         .map((f) => ({
@@ -91,8 +113,8 @@ function courseSidebar() {
         }))
       // 没有子页面的课程直接当链接，不给折叠箭头 —— 避免侧边栏出现空分组
       return children.length
-        ? { text: course, link: `/专业课/${semester}/${course}/`, collapsed: true, items: children }
-        : { text: course, link: `/专业课/${semester}/${course}/` }
+        ? { text: label, link: `/专业课/${semester}/${course}/`, collapsed: true, items: children }
+        : { text: label, link: `/专业课/${semester}/${course}/` }
     })
   }))
 }

@@ -355,6 +355,127 @@ html.has-aplayer-fixed .VPFooter {
   }
 }
 
+/* ---------------- 学习日志时间线 ---------------- */
+
+.log-timeline {
+  position: relative;
+  margin: 18px 0 26px;
+  padding-left: 26px;
+}
+
+/* 那条竖轴 */
+.log-timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--vp-c-divider);
+}
+
+.log-item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  text-decoration: none !important;
+}
+
+/* 轴上的圆点：用背景色描一圈，把竖轴「打断」，看起来是穿过去的 */
+.log-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  margin-top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--vp-c-brand-3);
+  box-shadow: 0 0 0 3px var(--vp-c-bg);
+  transition: transform 0.2s ease;
+}
+
+.log-item:hover::before {
+  transform: scale(1.35);
+}
+
+.log-item__date {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--vp-c-text-3);
+}
+
+.log-item__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--vp-c-text-1);
+  transition: color 0.2s ease;
+}
+
+.log-item:hover .log-item__title {
+  color: var(--vp-c-brand-1);
+}
+
+.log-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vp-c-text-3);
+}
+
+/* ---------------- 排印细节 ---------------- */
+
+/* 标题换行更均衡，避免最后一行只剩一两个字 */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3 {
+  text-wrap: balance;
+}
+
+/* 表格里的数字等宽对齐 */
+.vp-doc td,
+.vp-doc th {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 列表项之间留一点空隙，长清单好读很多 */
+.vp-doc li + li {
+  margin-top: 4px;
+}
+
+/* 分隔线 */
+.vp-doc hr {
+  height: 1px;
+  margin: 34px 0;
+  border: 0;
+  background: var(--vp-c-divider);
+}
+
+/* 键盘按键：像真的按键，有下沿 */
+.vp-doc kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--vp-c-divider);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--vp-c-bg-soft);
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+/* ==高亮== 用主色淡底 */
+.vp-doc mark {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-text-1);
+}
+
 /* ---------------- 打印样式：只留正文 ---------------- */
 
 @media print {
