@@ -20,6 +20,7 @@ const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const DOCS = path.join(ROOT, 'docs')
 const COURSE_ROOT = path.join(DOCS, '专业课')
 const ASSET_ROOT = path.join(DOCS, 'public', '资料')
+const MUSIC_ROOT = path.join(DOCS, 'public', 'music')
 
 const GENERATED_BY = '本文件由 scripts/build-index.mjs 自动生成，请勿手动编辑（会被覆盖）。'
 
@@ -213,6 +214,46 @@ function syncCourseAssets(semester, course) {
   }
 }
 
+/** 能当音乐放的扩展名 */
+const AUDIO_EXT = ['.mp3', '.m4a', '.aac', '.wav', '.ogg', '.oga', '.flac', '.opus']
+
+/**
+ * 扫描 docs/public/music/，生成 APlayer 用的歌单 playlist.json。
+ *
+ * 文件名写成「艺术家 - 标题.mp3」会自动拆成歌手和曲名，比如
+ *   Drake - Passionfruit.mp3  →  歌手 Drake，曲名 Passionfruit
+ * 只写标题也行，歌手留空。
+ */
+function writeMusicPlaylist() {
+  fs.mkdirSync(MUSIC_ROOT, { recursive: true })
+
+  const files = fs
+    .readdirSync(MUSIC_ROOT)
+    .filter((f) => !f.startsWith('.') && AUDIO_EXT.includes(path.extname(f).toLowerCase()))
+    .sort((a, b) => a.localeCompare(b, 'zh-CN', { numeric: true }))
+
+  const audio = files.map((file) => {
+    const base = file.replace(/\.[^.]+$/, '')
+    const parts = base.split(/\s+-\s+/)
+    return {
+      name: parts.length > 1 ? parts.slice(1).join(' - ') : base,
+      artist: parts.length > 1 ? parts[0] : '',
+      url: encodeURI(`/music/${file}`)
+    }
+  })
+
+  fs.writeFileSync(
+    path.join(MUSIC_ROOT, 'playlist.json'),
+    JSON.stringify({ generated: true, audio }, null, 2),
+    'utf-8'
+  )
+  console.log(
+    audio.length
+      ? `  ✓ 音乐歌单：docs/public/music/playlist.json（${audio.length} 首：${audio.map((a) => a.name).join('、')}）`
+      : '  - 音乐文件夹里没有音频文件，播放器不会显示'
+  )
+}
+
 /** 生成学期总览页 */
 function writeSemesterPage(semester, courses) {
   const target = path.join(COURSE_ROOT, semester, 'index.md')
@@ -403,6 +444,7 @@ function main() {
   }
 
   syncCourseCards(bySemester)
+  writeMusicPlaylist()
   console.log('[build-index] 完成。')
 }
 

@@ -311,6 +311,26 @@
   background: var(--vp-c-bg-soft);
 }
 
+/* ---------------- APlayer 音乐播放器 ---------------- */
+
+/* 底栏是固定定位的，给它留出空间，别盖住正文最后一段 */
+html.has-aplayer-fixed .VPContent,
+html.has-aplayer-fixed .VPFooter {
+  padding-bottom: 76px;
+}
+
+/* APlayer 固定底栏的层级：别被 VitePress 的导航压住 */
+.aplayer.aplayer-fixed {
+  z-index: 35;
+}
+
+@media print {
+  .aplayer,
+  .aplayer-fixed {
+    display: none !important;
+  }
+}
+
 /* ---------------- 打印样式：只留正文 ---------------- */
 
 @media print {
