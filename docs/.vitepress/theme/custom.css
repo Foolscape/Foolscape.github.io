@@ -807,6 +807,70 @@ html.has-aplayer-fixed .VPFooter {
   color: var(--vp-c-text-1);
 }
 
+/* ---------------- 背景特效 ---------------- */
+
+/*
+ * 两个背景特效都可以单独关掉，改 :root 里的变量就行：
+ *   --my-spotlight: 0   → 关掉鼠标跟随光晕
+ *   --my-grain: 0       → 关掉噪点颗粒
+ */
+:root {
+  --my-spotlight: 0.09;
+  --my-grain: 0.035;
+}
+
+.dark {
+  --my-spotlight: 0.13;
+  --my-grain: 0.05;
+}
+
+/* 鼠标跟随光晕：一束很淡的暖光，用 lerp 缓动追上光标 */
+.spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    circle,
+    rgba(249, 115, 22, var(--my-spotlight)) 0%,
+    transparent 62%
+  );
+  will-change: transform;
+}
+
+/* 噪点颗粒：一层极淡的胶片颗粒，让纯色背景不那么"塑料"。
+   用内联 SVG 的 feTurbulence 生成，不请求任何外部资源。 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+  opacity: var(--my-grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight {
+    display: none;
+  }
+}
+
+@media print {
+  .spotlight,
+  body::after {
+    display: none !important;
+  }
+}
+
 /* ---------------- 鼠标点击动效 ---------------- */
 
 .click-fx-layer {
