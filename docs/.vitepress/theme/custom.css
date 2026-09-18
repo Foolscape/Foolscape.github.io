@@ -1,16 +1,20 @@
 /* ============================================================
    峻熹的学习笔记 · 主题微调
    ------------------------------------------------------------
-   想换配色？只改下面 :root 和 .dark 里的 4 个 --vp-c-brand-* 变量，
-   整站（链接、按钮、侧边栏高亮、行内代码）会自动跟着变。
+   配色原则：中性白底 + 单一强调色。
+   强调色只出现在链接、激活态、行内代码、按钮上，绝不铺成大面积背景 ——
+   强调色之所以有力，是因为它稀缺（大约 90% 中性色 + 10% 强调色）。
+
+   想换强调色？只改下面 :root 和 .dark 里的 4 个 --vp-c-brand-* 变量，
+   再加上 --vp-home-hero-name-background 与两处数字渐变即可。
    ============================================================ */
 
 :root {
-  /* 主色：砖红 / 暖橙。想换色只改这 4 行 */
-  --vp-c-brand-1: #c2410c;
-  --vp-c-brand-2: #ea580c;
-  --vp-c-brand-3: #f97316;
-  --vp-c-brand-soft: rgba(249, 115, 22, 0.14);
+  /* 强调色：深蓝。想换色只改这 4 行 */
+  --vp-c-brand-1: #1d4ed8;
+  --vp-c-brand-2: #2563eb;
+  --vp-c-brand-3: #3b82f6;
+  --vp-c-brand-soft: rgba(59, 130, 246, 0.12);
 
   /* 不引用 Inter：中文站用不上，去掉可省一次 66 KB 字体下载，直接用系统字体 */
   --vp-font-family-base: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
@@ -19,22 +23,22 @@
 
   /* 首页大标题的渐变（VitePress 官方变量，比直接改 .clip 安全） */
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #b45309 10%, #f59e0b 85%);
-  --vp-home-hero-image-background-image: linear-gradient(-45deg, #fbbf24 35%, #c2410c 65%);
+  --vp-home-hero-name-background: linear-gradient(120deg, #1e3a8a 10%, #3b82f6 85%);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #60a5fa 35%, #1e40af 65%);
   --vp-home-hero-image-filter: blur(56px);
 
-  --my-selection: rgba(249, 115, 22, 0.22);
+  --my-selection: rgba(59, 130, 246, 0.2);
 }
 
 .dark {
-  --vp-c-brand-1: #fdba74;
-  --vp-c-brand-2: #fb923c;
-  --vp-c-brand-3: #f97316;
-  --vp-c-brand-soft: rgba(251, 146, 60, 0.16);
+  --vp-c-brand-1: #93c5fd;
+  --vp-c-brand-2: #60a5fa;
+  --vp-c-brand-3: #3b82f6;
+  --vp-c-brand-soft: rgba(96, 165, 250, 0.16);
 
-  --vp-home-hero-name-background: linear-gradient(120deg, #fcd34d 10%, #fb923c 85%);
+  --vp-home-hero-name-background: linear-gradient(120deg, #bfdbfe 10%, #60a5fa 85%);
 
-  --my-selection: rgba(251, 146, 60, 0.28);
+  --my-selection: rgba(96, 165, 250, 0.26);
 }
 
 ::selection {
@@ -459,14 +463,14 @@ html.has-aplayer-fixed .VPFooter {
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(120deg, #b45309 10%, #f59e0b 90%);
+  background: linear-gradient(120deg, #1e40af 10%, #3b82f6 90%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .dark .home-stat__num {
-  background: linear-gradient(120deg, #fcd34d 10%, #fb923c 90%);
+  background: linear-gradient(120deg, #93c5fd 10%, #60a5fa 90%);
   -webkit-background-clip: text;
   background-clip: text;
 }

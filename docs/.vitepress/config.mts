@@ -168,7 +168,7 @@ export default defineConfig({
 
   head: [
     ['meta', { name: 'author', content: '顾峻熹 Foolscape' }],
-    ['meta', { name: 'theme-color', content: '#ea580c' }],
+    ['meta', { name: 'theme-color', content: '#2563eb' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
     // 关掉 JS 时：首页那些等待滚动入场的元素别一直藏着
     [
