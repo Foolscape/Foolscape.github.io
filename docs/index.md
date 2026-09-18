@@ -30,41 +30,41 @@ hero:
   <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">份资料</span></div>
   </div>
   <h2 class="home-h2">大一春夏</h2>
-  <div class="course-grid">
-    <a class="course-card" href="/专业课/大一春夏/常微分方程/">
-      <span class="course-card__term">大一春夏</span>
-      <span class="course-card__name">📈 常微分方程</span>
-      <span class="course-card__meta">1 份资料</span>
-    </a>
+  <div class="course-list">
+  <a class="course-row" href="/专业课/大一春夏/常微分方程/">
+    <span class="course-row__name">📈 常微分方程</span>
+    <span class="course-row__meta">1 份资料</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
   </div>
 
   <h2 class="home-h2">大二秋冬</h2>
-  <div class="course-grid">
-    <a class="course-card" href="/专业课/大二秋冬/大学物理甲II/">
-      <span class="course-card__term">大二秋冬</span>
-      <span class="course-card__name">🔭 大学物理甲II</span>
-      <span class="course-card__meta">还没开始记</span>
-    </a>
-    <a class="course-card" href="/专业课/大二秋冬/电路与电子技术实验I/">
-      <span class="course-card__term">大二秋冬</span>
-      <span class="course-card__name">🔬 电路与电子技术实验I</span>
-      <span class="course-card__meta">1 篇笔记</span>
-    </a>
-    <a class="course-card" href="/专业课/大二秋冬/电路与电子技术I/">
-      <span class="course-card__term">大二秋冬</span>
-      <span class="course-card__name">⚡ 电路与电子技术I</span>
-      <span class="course-card__meta">还没开始记</span>
-    </a>
-    <a class="course-card" href="/专业课/大二秋冬/复变函数与积分变换/">
-      <span class="course-card__term">大二秋冬</span>
-      <span class="course-card__name">🌀 复变函数与积分变换</span>
-      <span class="course-card__meta">1 份资料</span>
-    </a>
-    <a class="course-card" href="/专业课/大二秋冬/概率论与数理统计/">
-      <span class="course-card__term">大二秋冬</span>
-      <span class="course-card__name">🎲 概率论与数理统计</span>
-      <span class="course-card__meta">还没开始记</span>
-    </a>
+  <div class="course-list">
+  <a class="course-row" href="/专业课/大二秋冬/大学物理甲II/">
+    <span class="course-row__name">🔭 大学物理甲II</span>
+    <span class="course-row__meta">还没开始记</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
+  <a class="course-row" href="/专业课/大二秋冬/电路与电子技术实验I/">
+    <span class="course-row__name">🔬 电路与电子技术实验I</span>
+    <span class="course-row__meta">1 篇笔记</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
+  <a class="course-row" href="/专业课/大二秋冬/电路与电子技术I/">
+    <span class="course-row__name">⚡ 电路与电子技术I</span>
+    <span class="course-row__meta">还没开始记</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
+  <a class="course-row" href="/专业课/大二秋冬/复变函数与积分变换/">
+    <span class="course-row__name">🌀 复变函数与积分变换</span>
+    <span class="course-row__meta">1 份资料</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
+  <a class="course-row" href="/专业课/大二秋冬/概率论与数理统计/">
+    <span class="course-row__name">🎲 概率论与数理统计</span>
+    <span class="course-row__meta">还没开始记</span>
+    <span class="course-row__arrow" aria-hidden="true">›</span>
+  </a>
   </div>
 
   <h2 class="home-h2">最近更新</h2>

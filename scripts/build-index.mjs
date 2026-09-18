@@ -692,7 +692,7 @@ function writeHomeDashboard(bySemester) {
 
   const sections = bySemester.map(([semester, courses]) => {
     courseCount += courses.length
-    const cards = courses.map((course) => {
+    const rows = courses.map((course) => {
       const dir = path.join(COURSE_ROOT, semester, course)
       const notes = fs.existsSync(dir)
         ? fs
@@ -708,17 +708,17 @@ function writeHomeDashboard(bySemester) {
       if (assets) meta.push(`${assets} 份资料`)
 
       return (
-        `    <a class="course-card" href="/专业课/${semester}/${course}/">\n` +
-        `      <span class="course-card__term">${escHtml(semester)}</span>\n` +
-        `      <span class="course-card__name">${homeIcon(course)} ${escHtml(course)}</span>\n` +
-        `      <span class="course-card__meta">${meta.join(' · ') || '还没开始记'}</span>\n` +
-        `    </a>`
+        `  <a class="course-row" href="/专业课/${semester}/${course}/">\n` +
+        `    <span class="course-row__name">${homeIcon(course)} ${escHtml(course)}</span>\n` +
+        `    <span class="course-row__meta">${meta.join(' · ') || '还没开始记'}</span>\n` +
+        `    <span class="course-row__arrow" aria-hidden="true">›</span>\n` +
+        `  </a>`
       )
     })
 
     return (
       `  <h2 class="home-h2">${escHtml(semester)}</h2>\n` +
-      `  <div class="course-grid">\n${cards.join('\n')}\n  </div>`
+      `  <div class="course-list">\n${rows.join('\n')}\n  </div>`
     )
   })
 

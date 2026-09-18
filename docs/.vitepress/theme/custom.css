@@ -428,7 +428,7 @@ html.has-aplayer-fixed .VPFooter {
 }
 
 .home-stat,
-.home-dash .course-card,
+.home-dash .course-row,
 .home-dash .log-item,
 .home-dash .home-h2 {
   animation: home-rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
@@ -451,22 +451,22 @@ html.has-aplayer-fixed .VPFooter {
   animation-delay: 0.26s;
 }
 
-.home-dash .course-card:nth-child(1) {
+.home-dash .course-row:nth-child(1) {
   animation-delay: 0.05s;
 }
-.home-dash .course-card:nth-child(2) {
+.home-dash .course-row:nth-child(2) {
   animation-delay: 0.11s;
 }
-.home-dash .course-card:nth-child(3) {
+.home-dash .course-row:nth-child(3) {
   animation-delay: 0.17s;
 }
-.home-dash .course-card:nth-child(4) {
+.home-dash .course-row:nth-child(4) {
   animation-delay: 0.23s;
 }
-.home-dash .course-card:nth-child(5) {
+.home-dash .course-row:nth-child(5) {
   animation-delay: 0.29s;
 }
-.home-dash .course-card:nth-child(6) {
+.home-dash .course-row:nth-child(6) {
   animation-delay: 0.35s;
 }
 
@@ -486,50 +486,37 @@ html.has-aplayer-fixed .VPFooter {
   animation-delay: 0.33s;
 }
 
-/* --- 数据统计卡 --- */
+/* --- 数据统计：一行淡文字，不做成 KPI 盒子 --- */
 
 .home-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
-  gap: 12px;
-  margin: 0 0 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin: 0 0 46px;
 }
 
 .home-stat {
-  padding: 20px 12px 18px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 16px;
-  background:
-    radial-gradient(120% 90% at 50% 0%, var(--vp-c-brand-soft), transparent 62%),
-    var(--vp-c-bg-soft);
-  text-align: center;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  display: inline-flex;
+  align-items: baseline;
 }
 
-.home-stat:hover {
-  transform: translateY(-4px);
-  border-color: var(--vp-c-brand-2);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-}
-.dark .home-stat:hover {
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+/* 用小圆点分隔，而不是边框 */
+.home-stat + .home-stat::before {
+  content: '·';
+  margin: 0 13px;
+  color: var(--vp-c-divider);
 }
 
 .home-stat__num {
-  display: block;
-  font-size: 32px;
-  font-weight: 800;
-  line-height: 1.1;
+  margin-right: 5px;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   background: linear-gradient(120deg, #b45309 10%, #f59e0b 90%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  transition: transform 0.25s ease;
-}
-
-.home-stat:hover .home-stat__num {
-  transform: scale(1.12);
 }
 
 .dark .home-stat__num {
@@ -539,8 +526,6 @@ html.has-aplayer-fixed .VPFooter {
 }
 
 .home-stat__label {
-  display: block;
-  margin-top: 6px;
   font-size: 13px;
   color: var(--vp-c-text-3);
 }
@@ -572,21 +557,67 @@ html.has-aplayer-fixed .VPFooter {
   margin-top: 0;
 }
 
-/* --- 首页课程卡片 --- */
+/* --- 课程列表：细线分隔的行，不是卡片网格 --- */
 
-.home-dash .course-card {
-  padding: 16px 18px;
+.course-list {
+  margin: 4px 0 0;
 }
 
-.home-dash .course-card__name {
-  font-size: 16px;
+.course-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 10px;
+  text-decoration: none !important;
+  /* 用 inset 阴影当分隔线，悬浮时换成背景色才带得出圆角 */
+  box-shadow: inset 0 -1px 0 var(--vp-c-divider);
+  transition: background-color 0.2s ease, padding-left 0.2s ease, border-radius 0.2s ease;
 }
 
-.home-dash .course-card:hover {
-  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.16);
+.course-row:last-child {
+  box-shadow: none;
 }
-.dark .home-dash .course-card:hover {
-  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.22);
+
+.course-row:hover {
+  padding-left: 16px;
+  border-radius: 10px;
+  background: var(--vp-c-brand-soft);
+  box-shadow: none;
+}
+
+.course-row__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--vp-c-text-1);
+  transition: color 0.2s ease;
+}
+
+.course-row:hover .course-row__name {
+  color: var(--vp-c-brand-1);
+}
+
+.course-row__meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+}
+
+/* 箭头平时藏着，悬浮才滑出来 */
+.course-row__arrow {
+  flex-shrink: 0;
+  font-size: 17px;
+  line-height: 1;
+  color: var(--vp-c-brand-1);
+  opacity: 0;
+  transform: translateX(-5px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.course-row:hover .course-row__arrow {
+  opacity: 1;
+  transform: none;
 }
 
 /* --- 最近更新：圆点呼吸 --- */
@@ -641,7 +672,7 @@ html.has-aplayer-fixed .VPFooter {
 
 @media (prefers-reduced-motion: reduce) {
   .home-stat,
-  .home-dash .course-card,
+  .home-dash .course-row,
   .home-dash .log-item,
   .home-dash .home-h2,
   .home-glow,
