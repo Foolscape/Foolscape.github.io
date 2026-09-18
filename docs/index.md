@@ -19,6 +19,10 @@ hero:
 
 <!-- 首页看板：开始（自动生成，勿手改这一段） -->
 <div class="home-dash">
+  <div class="home-glows" aria-hidden="true">
+    <span class="home-glow home-glow--a"></span>
+    <span class="home-glow home-glow--b"></span>
+  </div>
   <div class="home-stats">
   <div class="home-stat"><span class="home-stat__num">2</span><span class="home-stat__label">个学期</span></div>
   <div class="home-stat"><span class="home-stat__num">6</span><span class="home-stat__label">门课程</span></div>
@@ -71,5 +75,6 @@ hero:
     <a class="log-item" href="/专业课/大二秋冬/概率论与数理统计/"><span class="log-item__date">09-18</span><span class="log-item__title">概率论与数理统计</span></a>
     <a class="log-item" href="/专业课/大二秋冬/电路与电子技术I/"><span class="log-item__date">09-18</span><span class="log-item__title">电路与电子技术I</span></a>
   </div>
+  <HomeFx />
 </div>
 <!-- 首页看板：结束 -->

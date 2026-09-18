@@ -3,6 +3,7 @@ import DefaultTheme from 'vitepress/theme'
 import PdfViewer from './components/PdfViewer.vue'
 import MaterialList from './components/MaterialList.vue'
 import APlayerBg from './components/APlayerBg.vue'
+import HomeFx from './components/HomeFx.vue'
 import './custom.css'
 
 export default {
@@ -22,5 +23,6 @@ export default {
     // <MaterialList :files='...' /> —— 资料列表 + 共享预览区（课程页自动生成）
     app.component('PdfViewer', PdfViewer)
     app.component('MaterialList', MaterialList)
+    app.component('HomeFx', HomeFx)
   }
 }

@@ -358,10 +358,136 @@ html.has-aplayer-fixed .VPFooter {
 /* ---------------- 首页看板 ---------------- */
 
 .home-dash {
+  position: relative;
   margin-top: 8px;
 }
 
-/* 数据统计：一行大数字 */
+/*
+ * 两团缓慢漂移的暖色光斑。
+ * 放在独立的裁剪层里，这样光斑不会溢出造成横向滚动条，
+ * 又不会把卡片悬浮时的阴影一起裁掉。
+ */
+.home-glows {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.home-glow {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.32;
+  animation: home-drift 24s ease-in-out infinite alternate;
+}
+
+.home-glow--a {
+  top: -150px;
+  left: -110px;
+  background: radial-gradient(circle, #f59e0b, transparent 70%);
+}
+
+.home-glow--b {
+  top: 10px;
+  right: -130px;
+  background: radial-gradient(circle, #c2410c, transparent 70%);
+  animation-delay: -11s;
+}
+
+@keyframes home-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(52px, 38px, 0) scale(1.18);
+  }
+}
+
+/* 内容压到光斑上面一层 */
+.home-dash > *:not(.home-glows) {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- 入场错落浮现（纯 CSS，不用 JS，也不会闪烁） --- */
+
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.home-stat,
+.home-dash .course-card,
+.home-dash .log-item,
+.home-dash .home-h2 {
+  animation: home-rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+}
+
+.home-dash .home-h2 {
+  animation-delay: 0.02s;
+}
+
+.home-stat:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.home-stat:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.home-stat:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.home-stat:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+.home-dash .course-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.home-dash .course-card:nth-child(2) {
+  animation-delay: 0.11s;
+}
+.home-dash .course-card:nth-child(3) {
+  animation-delay: 0.17s;
+}
+.home-dash .course-card:nth-child(4) {
+  animation-delay: 0.23s;
+}
+.home-dash .course-card:nth-child(5) {
+  animation-delay: 0.29s;
+}
+.home-dash .course-card:nth-child(6) {
+  animation-delay: 0.35s;
+}
+
+.home-dash .log-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.home-dash .log-item:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.home-dash .log-item:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.home-dash .log-item:nth-child(4) {
+  animation-delay: 0.26s;
+}
+.home-dash .log-item:nth-child(5) {
+  animation-delay: 0.33s;
+}
+
+/* --- 数据统计卡 --- */
+
 .home-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
@@ -370,22 +496,28 @@ html.has-aplayer-fixed .VPFooter {
 }
 
 .home-stat {
-  padding: 18px 12px 16px;
+  padding: 20px 12px 18px;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 14px;
-  background: var(--vp-c-bg-soft);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--vp-c-brand-soft), transparent 62%),
+    var(--vp-c-bg-soft);
   text-align: center;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .home-stat:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   border-color: var(--vp-c-brand-2);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+.dark .home-stat:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
 }
 
 .home-stat__num {
   display: block;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 800;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
@@ -393,6 +525,11 @@ html.has-aplayer-fixed .VPFooter {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  transition: transform 0.25s ease;
+}
+
+.home-stat:hover .home-stat__num {
+  transform: scale(1.12);
 }
 
 .dark .home-stat__num {
@@ -408,8 +545,11 @@ html.has-aplayer-fixed .VPFooter {
   color: var(--vp-c-text-3);
 }
 
-/* 学期小标题：覆盖正文 h2 的分隔线样式 */
+/* --- 小节标题：前面一小段主色竖条（覆盖正文 h2 的分隔线样式） --- */
+
 .vp-doc .home-h2 {
+  display: flex;
+  align-items: center;
   margin: 36px 0 14px;
   padding: 0;
   border: 0;
@@ -419,11 +559,21 @@ html.has-aplayer-fixed .VPFooter {
   color: var(--vp-c-text-3);
 }
 
-.vp-doc .home-h2:first-child {
+.vp-doc .home-h2::before {
+  content: '';
+  width: 3px;
+  height: 13px;
+  margin-right: 9px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--vp-c-brand-3), var(--vp-c-brand-1));
+}
+
+.vp-doc .home-h2:first-of-type {
   margin-top: 0;
 }
 
-/* 首页的课程卡片比专业课页再高一点，视觉上更“可点” */
+/* --- 首页课程卡片 --- */
+
 .home-dash .course-card {
   padding: 16px 18px;
 }
@@ -432,9 +582,73 @@ html.has-aplayer-fixed .VPFooter {
   font-size: 16px;
 }
 
-/* 首页的最近更新，上方留点空 */
+.home-dash .course-card:hover {
+  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.16);
+}
+.dark .home-dash .course-card:hover {
+  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.22);
+}
+
+/* --- 最近更新：圆点呼吸 --- */
+
 .home-dash .log-timeline {
   margin-top: 0;
+}
+
+.home-dash .log-item::before {
+  animation: home-pulse 2.8s ease-in-out infinite;
+}
+.home-dash .log-item:nth-child(2)::before {
+  animation-delay: 0.4s;
+}
+.home-dash .log-item:nth-child(3)::before {
+  animation-delay: 0.8s;
+}
+.home-dash .log-item:nth-child(4)::before {
+  animation-delay: 1.2s;
+}
+.home-dash .log-item:nth-child(5)::before {
+  animation-delay: 1.6s;
+}
+
+@keyframes home-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--vp-c-bg);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--vp-c-brand-soft);
+  }
+}
+
+/* --- hero 大标题的渐变缓缓流动 --- */
+
+.VPHero .name .clip {
+  background-size: 220% 100%;
+  animation: home-shift 9s ease-in-out infinite alternate;
+}
+
+@keyframes home-shift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+/* --- 尊重系统的「减少动态效果」设置 --- */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-stat,
+  .home-dash .course-card,
+  .home-dash .log-item,
+  .home-dash .home-h2,
+  .home-glow,
+  .home-dash .log-item::before,
+  .VPHero .name .clip {
+    animation: none;
+  }
 }
 
 /* ---------------- 学习日志时间线 ---------------- */
